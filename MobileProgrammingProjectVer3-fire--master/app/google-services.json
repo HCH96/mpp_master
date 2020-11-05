@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "793130209394",
+    "firebase_url": "https://mobileprogrammingteamproject.firebaseio.com",
+    "project_id": "mobileprogrammingteamproject",
+    "storage_bucket": "mobileprogrammingteamproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793130209394:android:660c64658c484c556ef2eb",
+        "android_client_info": {
+          "package_name": "org.tech.mobileprogrammingproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "793130209394-dhvqspjoilo5p9b6ism1k0ha9o37gbds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXxJMjf1rPMeCD3X4Xpp37dbVY0UV-rcA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793130209394-dhvqspjoilo5p9b6ism1k0ha9o37gbds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

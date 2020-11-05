@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="380dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#4c6588"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="할 일을 끝마쳤나요 ?"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/start_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:text="시작 시간" />
+
+        <EditText
+            android:id="@+id/startTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center"
+            android:background="@android:color/transparent"
+            android:ems="18"
+            android:hint="클릭하여 시간을 입력하세요."
+            android:textColorHint="#B4BABA" />
+
+        <TextView
+            android:id="@+id/end_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:text="종료 시간" />
+
+        <EditText
+            android:id="@+id/endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:ems="18"
+            android:clickable="true"
+            android:focusable="false"
+            android:background="@android:color/transparent"
+            android:hint="클릭하여 시간을 입력하세요."
+            android:textColorHint="#B4BABA" />
+
+        <CheckBox
+            android:id="@+id/cb_none"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="시간 미지정" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="45dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="#b4baba"
+            android:textSize="13sp"
+            android:text="시간 미지정 시 타임라인에 반영되지 않음" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_cancelDone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:text="취소" />
+
+            <Button
+                android:id="@+id/bt_done"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:text="완료" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
