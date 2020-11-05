@@ -40,6 +40,9 @@ public class thirdPage extends Fragment{
 
     황교민 2020.09.24
     * SQLite로 DB를 구현하였음. 메모장의 내용을 저장하도록 DB에 연결함.
+    
+    황교민 2020.10.24
+    1. firebase db변경함.
      */
 
     static DatabaseReference database = null;
