@@ -45,11 +45,15 @@ class Data {
 
 public class secondPage extends Fragment {
     public static String dateTime = "";
+    // null Action에 대해서 같은 색으로 처리하기 위해서
+    public ArrayList<Integer> nullActionIdx = new ArrayList<>();
+    // 몇개의 할일 덩어리가 있는지 파악하기 위해서
+    public int idx;
 
-    Data data1 = new Data("공부", 1410 , 1630 );
-    Data data2 = new Data("TV", 1730, 1830);
+    Data data1 = new Data("공부", 1414 , 1630 );
+    Data data2 = new Data("TV", 1739, 1830);
     Data data3 = new Data("Youtube", 1900, 2200);
-    Data data4 = new Data("잠자기", 0200,1000);
+    Data data4 = new Data("잠자기", 10,1000);
 
     ArrayList<String> timetable = new ArrayList<>(144);
 
@@ -71,7 +75,6 @@ public class secondPage extends Fragment {
         for(int i =0; i<144; i++){
             timetable.add(" ");
         }
-
         setting(data1);
         setting(data2);
         setting(data3);
@@ -80,24 +83,30 @@ public class secondPage extends Fragment {
         ArrayList<PieEntry> piedata = new ArrayList<>();
         float piesize = 0f;
         String precontent = timetable.get(0);
+        idx = 0;
+        if(precontent.equals(" ")) nullActionIdx.add(idx);
+        // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
+        //piedata.add(new PieEntry(piesize, precontent));
         for(int i =0; i<timetable.size(); i++){
             if(precontent != timetable.get(i)){
                 piedata.add(new PieEntry(piesize, precontent));
                 piesize =0f;
                 precontent = timetable.get(i);
+                idx++;
+                if(precontent.equals(" ")) nullActionIdx.add(idx);
             }else{
                 piesize = piesize+1f;
                 precontent = timetable.get(i);
             }
         }
         piedata.add(new PieEntry(piesize,precontent));
-
         return piedata;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        nullActionIdx.clear();
         return (ViewGroup) inflater.inflate(R.layout.secondpage, container, false);
     }
 
@@ -109,7 +118,29 @@ public class secondPage extends Fragment {
         pieDataSet.setSelectionShift(5f);
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
+        /*
+            2020.11.06 황교민
+            null Action에 대해서 같은 색상으로 표시하기 위해서 nullActionIdx를 받아옴.
+            nullActionIdx에 해당하는 곳에는 하나의 color를 할당하고, 나머지는 미리 생성한 colorForAct에서 순차적으로 color을 받아옴.
 
+            next Thing :
+            1. 시간이 만약에 잘못 입력되었으면 어떻게 할 것인지(아마도 firstpage에서 처리할 듯 하다.)
+            2. 만약에 표시할 수 없을 정도로 작은 할일은 어떻게 처리할 것인가(즉 10분 미만의 할일)
+             => 아마도 layout을 하나 더 만들어서 동적으로 할일을 표시하면 가능할 듯 하다.
+         */
+        ArrayList<Integer> colorForAct = new ArrayList<>();
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colorForAct.add(c);
+        int colorIdx = 0;
+        for(int i = 0 ; i < idx + 1 ; i++){
+            if(nullActionIdx.contains(i)) {
+                colors.add(ColorTemplate.JOYFUL_COLORS[0]);
+            }
+            else {
+                colors.add(colorForAct.get(colorIdx++));
+            }
+        }
+        /*
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
             colors.add(c);
 
@@ -124,9 +155,8 @@ public class secondPage extends Fragment {
 
         for (int c : ColorTemplate.PASTEL_COLORS)
             colors.add(c);
-
+        */
         pieDataSet.setColors(colors);
-
 
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueTextSize(0);
