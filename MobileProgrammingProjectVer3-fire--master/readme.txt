@@ -1,7 +1,7 @@
 1. 실행 환경
 -window10
 -pixel 2 api 30(AVD)
-
+----------------------------
 2. 버전 / 사용언어
 - firebase realtime database
 - Android Gradle Plugin Version : 4.0.1
