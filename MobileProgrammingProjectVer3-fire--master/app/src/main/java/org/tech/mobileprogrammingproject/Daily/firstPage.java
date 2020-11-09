@@ -256,60 +256,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
                             }
                         });
-
-//                        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-//                            @Override
-//                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//
-//                                int i = rootView.getId();
-//                                DailyDB solve = itemIDArrayForRow.get(i+1);
-//                                CheckBox checkBox = rootView.findViewById(i+1);
-//
-//                                if(checkBox.isChecked()){
-//                                    Status s = Status.getInstance();
-//                                    Bundle bundle = new Bundle();
-//
-//
-//                                    bundle.putString("createdDate",solve.createDate);
-//                                    bundle.putInt("timeline",solve.timeline);
-//                                    bundle.putLong("dateLong", solve.date);
-//                                    bundle.putString("content",solve.content);
-//                                    bundle.putString("catalog",solve.catalog);
-//                                    bundle.putString("currDate", dateTime);
-//
-//                                    s.setArguments(bundle);
-//
-//                                    solved_db = new DailyDB();
-//                                    solved_db.createDate = solve.createDate;
-//                                    solved_db.content = solve.content;
-//                                    solved_db.state = 0;
-//                                    solved_db.timeline = 3;
-//                                    solved_db.catalog = solve.catalog;
-//                                    solved_db.date = solve.date;
-//
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solved_db.createDate).removeValue();
-//
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).setValue(solved_db);
-//
-//                                    s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
-//                                } else {
-//                                    solved_db = new DailyDB();
-//                                    solved_db.createDate = solve.createDate;
-//                                    solved_db.content = solve.content;
-//                                    solved_db.state = 0;
-//                                    solved_db.timeline = solve.timeline;
-//                                    solved_db.catalog = solve.catalog;
-//                                    solved_db.date = solve.date;
-//
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
-//
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).removeValue();
-//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).setValue(solved_db);
-//                                }
-//                            }
-//                        });
-
+                        
                         showDaliyTodo.addView(tr);
                     }
                 }
