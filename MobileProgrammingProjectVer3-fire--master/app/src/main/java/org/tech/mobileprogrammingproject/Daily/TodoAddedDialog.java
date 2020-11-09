@@ -1,5 +1,6 @@
 package org.tech.mobileprogrammingproject.Daily;
 
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -39,16 +41,11 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
         bt_cancel : (등록) 취소 버튼
         bt_listUp : 할 일 추가 버튼
         et_todo : dialog에서 입력받은 할 일(EditText)
-
     2. functions:
-
-
-
 */
 
     private Button bt_cancel;
     private Button bt_listUp;
-    private EditText et_todo;
     DatabaseReference database = null;
     private RadioGroup timeGroup;
     private LinearLayout todolist;
@@ -56,6 +53,7 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     DailyDB dailydb = null;
     Calendar cal;
     EditText content;
+    ImageButton delBtn;
 
     public static final String TAG_EVENT_DIALOG = "dialog_event";
     public static TodoAddedDialog getInstance() {
@@ -67,40 +65,138 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.todo_popup, container, false);
-        spinner = (Spinner) v.findViewById(R.id.category_spinner);
-        ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
-        adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapterArray);
-        cal = Calendar.getInstance();
-        content = v.findViewById(R.id.add_todo);
         database = FirebaseDatabase.getInstance().getReference();
+        if(getArguments().getInt("state") == 0) {
+            View v = inflater.inflate(R.layout.todo_popup, container, false);
+            spinner = (Spinner) v.findViewById(R.id.category_spinner);
+            ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
+            adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapterArray);
+            cal = Calendar.getInstance();
+            content = v.findViewById(R.id.add_todo);
+            database = FirebaseDatabase.getInstance().getReference();
 
-        bt_cancel = v.findViewById(R.id.bt_cancel);
-        bt_listUp = v.findViewById(R.id.bt_listUp);
-        et_todo = v.findViewById(R.id.add_todo);
+            bt_cancel = v.findViewById(R.id.bt_cancel);
+            bt_listUp = v.findViewById(R.id.bt_listUp);
 
-        todolist = v.findViewById(R.id.todolist);
-        timeGroup = v.findViewById(R.id.time_group);
-        bt_cancel.setOnClickListener(this);
-        bt_listUp.setOnClickListener(this);
-        setCancelable(false);
-        return v;
+            todolist = v.findViewById(R.id.todolist);
+            timeGroup = v.findViewById(R.id.time_group);
+            bt_cancel.setOnClickListener(this);
+            bt_listUp.setOnClickListener(this);
+            setCancelable(false);
+            return v;
+        }else{
+            View v = inflater.inflate(R.layout.todo_popup, container, false);
+            spinner = (Spinner) v.findViewById(R.id.category_spinner);
+            ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
+            adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapterArray);
+            bt_cancel = v.findViewById(R.id.bt_cancel);
+            bt_listUp = v.findViewById(R.id.bt_listUp);
+            content = v.findViewById(R.id.add_todo);
+            cal = Calendar.getInstance();
+            delBtn = v.findViewById(R.id.delBtn);
+            delBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    database.child("daily").child(Long.toString(getArguments().getLong("dateLong"))).child(Integer.toString(getArguments().getInt("timeline"))).child(getArguments().getString("createdDate")).removeValue();
+                    dismiss();
+                }
+            });
+            todolist = v.findViewById(R.id.todolist);
+            timeGroup = v.findViewById(R.id.time_group);
+            bt_cancel.setOnClickListener(this);
+            // 기존의 것 수정하기.
+            bt_listUp.setOnClickListener(this);
+            setCancelable(false);
+
+            switch (getArguments().getInt("timeline")){
+                case 0:
+                    timeGroup.check(R.id.time1);
+                    break;
+                case 1:
+                    timeGroup.check(R.id.time2);
+                    break;
+                case 2:
+                    timeGroup.check(R.id.time3);
+                    break;
+            }
+            content.setText(getArguments().getString("content"));
+            switch (getArguments().getString("catalog")){
+                case "미정":
+                    spinner.setSelection(0);
+                    break;
+                case "공부":
+                    spinner.setSelection(1);
+                    break;
+                case "과제":
+                    spinner.setSelection(2);
+                    break;
+                case "운동":
+                    spinner.setSelection(3);
+                    break;
+            }
+            return v;
+        }
     }
 
-
     public void onClick(View v) {
-
         switch (v.getId()) {
             case R.id.bt_listUp: //확인 버튼을 눌렀을 때
-                if (et_todo.getText().toString().equals("")) {
+                if (content.getText().toString().equals("")) {
                     Toast.makeText(v.getContext(), "할 일이 입력되지 않았습니다.", Toast.LENGTH_LONG).show();
                     break;
                 }
+                if(getArguments().getInt("state") == 1){
+                    System.out.println(Long.toString(getArguments().getLong("dateLong")));
+                    System.out.println(Integer.toString(getArguments().getInt("timeline")));
+                    System.out.println(getArguments().getString("createdDate"));
+                    database.child("daily").child(Long.toString(getArguments().getLong("dateLong"))).child(Integer.toString(getArguments().getInt("timeline"))).child(getArguments().getString("createdDate")).removeValue();
+                    if (timeGroup.getCheckedRadioButtonId() == R.id.time1) {
+                        dailydb = new DailyDB();
+                        dailydb.createDate = cal.getTime().toString();
+                        dailydb.content = content.getText().toString();
+                        dailydb.state = 0;
+                        dailydb.timeline = 0;
+                        dailydb.catalog = spinner.getSelectedItem().toString();
+                        dailydb.date = getArguments().getLong("dateLong");
+                        database.child("daily").child(Long.toString(dailydb.date)).child("0").child(cal.getTime().toString()).setValue(dailydb);
+
+                        dismiss();
+                        break;
+                    }
+                    else if(timeGroup.getCheckedRadioButtonId() == R.id.time2){
+                        dailydb = new DailyDB();
+                        dailydb.content = content.getText().toString();
+                        dailydb.createDate = cal.getTime().toString();
+                        dailydb.state = 0;
+                        dailydb.timeline = 1;
+                        dailydb.catalog = spinner.getSelectedItem().toString();
+                        dailydb.date = getArguments().getLong("dateLong");
+                        database.child("daily").child(Long.toString(dailydb.date)).child("1").child(cal.getTime().toString()).setValue(dailydb);
+
+                        dismiss();
+                        break;
+                    } else if (timeGroup.getCheckedRadioButtonId() == R.id.time3){
+                        dailydb = new DailyDB();
+                        dailydb.content = content.getText().toString();
+                        dailydb.createDate = cal.getTime().toString();
+                        dailydb.state = 0;
+                        dailydb.timeline = 2;
+                        dailydb.catalog = spinner.getSelectedItem().toString();
+                        dailydb.date = getArguments().getLong("dateLong");
+                        database.child("daily").child(Long.toString(dailydb.date)).child("2").child(cal.getTime().toString()).setValue(dailydb);
+                        dismiss();
+                        break;
+                    }
+                }
+
                 if (timeGroup.getCheckedRadioButtonId() == R.id.time1) {
                     dailydb = new DailyDB();
+                    dailydb.createDate = cal.getTime().toString();
                     dailydb.content = content.getText().toString();
                     dailydb.state = 0;
+                    dailydb.timeline = 0;
                     dailydb.catalog = spinner.getSelectedItem().toString();
                     dailydb.date = getArguments().getInt("year") * 1000 + getArguments().getInt("month") * 100 + getArguments().getInt("day");
                     database.child("daily").child(Long.toString(dailydb.date)).child("0").child(cal.getTime().toString()).setValue(dailydb);
@@ -111,7 +207,9 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                 else if(timeGroup.getCheckedRadioButtonId() == R.id.time2){
                     dailydb = new DailyDB();
                     dailydb.content = content.getText().toString();
+                    dailydb.createDate = cal.getTime().toString();
                     dailydb.state = 0;
+                    dailydb.timeline = 1;
                     dailydb.catalog = spinner.getSelectedItem().toString();
                     dailydb.date = getArguments().getInt("year") * 1000 + getArguments().getInt("month") * 100 + getArguments().getInt("day");
                     database.child("daily").child(Long.toString(dailydb.date)).child("1").child(cal.getTime().toString()).setValue(dailydb);
@@ -121,7 +219,9 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                 } else if (timeGroup.getCheckedRadioButtonId() == R.id.time3){
                     dailydb = new DailyDB();
                     dailydb.content = content.getText().toString();
+                    dailydb.createDate = cal.getTime().toString();
                     dailydb.state = 0;
+                    dailydb.timeline = 2;
                     dailydb.catalog = spinner.getSelectedItem().toString();
                     dailydb.date = getArguments().getInt("year") * 1000 + getArguments().getInt("month") * 100 + getArguments().getInt("day");
                     database.child("daily").child(Long.toString(dailydb.date)).child("2").child(cal.getTime().toString()).setValue(dailydb);
