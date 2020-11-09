@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,30 +37,31 @@ import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
 
 public class firstPage extends Fragment implements DatePickerDialog.OnDateSetListener{
 
-        /*
-    1. variables :
-        bt_date : 날짜 출력 및 DatePickerDialog 호출 버튼
-        bt_add : 할 일 추가 버튼
-        dateDialog : DatePickerDialog
-
-    2. functions:
-        bt_date.setOnClickListener : DatePickerDialog 호출
-        onDateSet: DatePickerDialog에서 설정한 날짜로 Text 출력 값 변경
-
-        bt_add.setOnClickListener: 할 일 추가 팝업 onClick 구현
-
-
-     */
+    /*
+1. variables :
+    bt_date : 날짜 출력 및 DatePickerDialog 호출 버튼
+    bt_add : 할 일 추가 버튼
+    dateDialog : DatePickerDialog
+2. functions:
+    bt_date.setOnClickListener : DatePickerDialog 호출
+    onDateSet: DatePickerDialog에서 설정한 날짜로 Text 출력 값 변경
+    bt_add.setOnClickListener: 할 일 추가 팝업 onClick 구현
+ */
     private Button bt_date;
     private Button bt_add;
     private DatePickerDialog dateDialog;
     private LinearLayout showDaliyTodo;
     private CheckBox cb;
-    // checkBox의 id를 담기 위해서
-    ArrayList<String> itemIDArray = new ArrayList<>();
+    // row의 index담기.
+    ArrayList<DailyDB> itemIDArrayForRow = new ArrayList<>();
+    ArrayList<Integer> itemID = new ArrayList<>();
+    public int idx = 0;
+    public int idxNum = 0;
 
     DatabaseReference database = null;
     DailyDB dailydb = null;
+    DailyDB solved_db = null;
+
     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     Calendar cal;
@@ -97,20 +100,19 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                 TodoAddedDialog e = TodoAddedDialog.getInstance();
 
                 Bundle args = new Bundle();
-                args.putInt("year",cal.get(Calendar.YEAR));
-                args.putInt("month", cal.get(Calendar.MONTH) + 1);
-                args.putInt("day", cal.get(Calendar.DATE));
+                args.putInt("state",0);
+                args.putInt("year",dateDialog.getDatePicker().getYear());
+                args.putInt("month", dateDialog.getDatePicker().getMonth() + 1);
+                args.putInt("day", dateDialog.getDatePicker().getDayOfMonth());
                 e.setArguments(args);
 
                 e.show(getChildFragmentManager(), TodoAddedDialog.TAG_EVENT_DIALOG);
-//                Status s = Status.getInstance();
-//                s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
             }
         });
         setting();
 
 
-                dateTime = Integer.toString(cal.get(Calendar.YEAR) * 1000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH));
+        dateTime = Integer.toString(cal.get(Calendar.YEAR) * 1000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH));
         return rootView;
 
     }
@@ -123,11 +125,12 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
         database.child("daily").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                itemIDArray.clear();
+                itemIDArrayForRow.clear();
                 showDaliyTodo.removeViews(1,showDaliyTodo.getChildCount() - 1);
                 dateTime = Integer.toString(dateDialog.getDatePicker().getYear() * 1000 + (dateDialog.getDatePicker().getMonth() + 1) * 100 + dateDialog.getDatePicker().getDayOfMonth());
                 DataSnapshot today = snapshot.child(dateTime);
-                for (int i = 0; i < 3; i++) {
+                idx = 0;
+                for (int i = 0; i < 4; i++) {
                     DataSnapshot currData = today.child(Integer.toString(i));
                     for (DataSnapshot childData : currData.getChildren()) {
                         DailyDB currDailyDB = childData.getValue(DailyDB.class);
@@ -140,7 +143,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         else textView1.setBackgroundColor(Color.parseColor("#92b5d8"));
                         textView1.setText("");
                         textView1.setGravity(Gravity.CENTER);
-                        textView1.setPadding(3,5,3,5);
+                        textView1.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params1.weight = 0.15f;
                         textView1.setLayoutParams(params1);
@@ -148,23 +151,165 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         TextView textView2 = new TextView(getContext());
                         textView2.setText(currDailyDB.content);
                         textView2.setGravity(Gravity.CENTER);
-                        textView2.setPadding(3,5,3,5);
+                        textView2.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params2.weight = 0.7f;
                         textView2.setLayoutParams(params2);
 
                         CheckBox cb = new CheckBox(getContext());
                         cb.setGravity(Gravity.CENTER);
-                        cb.setPadding(3,5,3,5);
+                        cb.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params3.weight = 0.15f;
                         cb.setLayoutParams(params3);
-                        cb.setId(itemIDArray.size() - 1);
 
+                        // 완료된 할 일 시각적으로 표시
+                        if(i==3) {
+                            tr.setBackgroundColor(Color.parseColor("#ededed"));
+                            textView1.setBackgroundColor(Color.parseColor("#BDBDBD"));
+                            textView2.setTextColor(Color.parseColor("#9b9b9b"));
+                            cb.setChecked(true);
+                        } else cb.setChecked(false);
 
                         tr.addView(textView1);
                         tr.addView(textView2);
                         tr.addView(cb);
+
+                        tr.setId(idx++);
+                        itemIDArrayForRow.add(currDailyDB);
+
+                        tr.setClickable(true);
+
+                        tr.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                TodoAddedDialog e = TodoAddedDialog.getInstance();
+                                Bundle args = new Bundle();
+                                args.putInt("state",1);
+                                DailyDB curr = itemIDArrayForRow.get(v.getId());
+                                args.putString("createdDate",curr.createDate);
+                                args.putString("content",curr.content);
+                                args.putString("catalog",curr.catalog);
+                                args.putInt("timeline",curr.timeline);
+                                args.putString("currDate", dateTime);
+                                args.putLong("dateLong", curr.date);
+
+                                e.setArguments(args);
+                                e.show(getChildFragmentManager(), TodoAddedDialog.TAG_EVENT_DIALOG);
+                                Toast.makeText(v.getContext(), "안녕안녕", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        tr.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                int i = rootView.getId();
+                                DailyDB solve = itemIDArrayForRow.get(i+1);
+
+                                solved_db = new DailyDB();
+                                solved_db.createDate = solve.createDate;
+                                solved_db.content = solve.content;
+                                solved_db.state = 0;
+                                solved_db.timeline = solve.timeline;
+                                solved_db.catalog = solve.catalog;
+                                solved_db.date = solve.date;
+
+                                database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
+
+                                database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).removeValue();
+                                database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).setValue(solved_db);
+
+                                return true;
+                            }
+                        });
+
+                        cb.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Status s = Status.getInstance();
+                                Bundle bundle = new Bundle();
+                                int i = rootView.getId();
+                                DailyDB solve = itemIDArrayForRow.get(i+1);
+
+                                bundle.putString("createdDate",solve.createDate);
+                                bundle.putInt("timeline",solve.timeline);
+                                bundle.putLong("dateLong", solve.date);
+                                bundle.putString("content",solve.content);
+                                bundle.putString("catalog",solve.catalog);
+                                bundle.putString("currDate", dateTime);
+
+                                s.setArguments(bundle);
+
+                                solved_db = new DailyDB();
+                                solved_db.createDate = solve.createDate;
+                                solved_db.content = solve.content;
+                                solved_db.state = 0;
+                                solved_db.timeline = 3;
+                                solved_db.catalog = solve.catalog;
+                                solved_db.date = solve.date;
+
+                                database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solved_db.createDate).removeValue();
+
+                                database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
+                                database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).setValue(solved_db);
+
+                                s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
+                            }
+                        });
+
+//                        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+//                            @Override
+//                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//
+//                                int i = rootView.getId();
+//                                DailyDB solve = itemIDArrayForRow.get(i+1);
+//                                CheckBox checkBox = rootView.findViewById(i+1);
+//
+//                                if(checkBox.isChecked()){
+//                                    Status s = Status.getInstance();
+//                                    Bundle bundle = new Bundle();
+//
+//
+//                                    bundle.putString("createdDate",solve.createDate);
+//                                    bundle.putInt("timeline",solve.timeline);
+//                                    bundle.putLong("dateLong", solve.date);
+//                                    bundle.putString("content",solve.content);
+//                                    bundle.putString("catalog",solve.catalog);
+//                                    bundle.putString("currDate", dateTime);
+//
+//                                    s.setArguments(bundle);
+//
+//                                    solved_db = new DailyDB();
+//                                    solved_db.createDate = solve.createDate;
+//                                    solved_db.content = solve.content;
+//                                    solved_db.state = 0;
+//                                    solved_db.timeline = 3;
+//                                    solved_db.catalog = solve.catalog;
+//                                    solved_db.date = solve.date;
+//
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solved_db.createDate).removeValue();
+//
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).setValue(solved_db);
+//
+//                                    s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
+//                                } else {
+//                                    solved_db = new DailyDB();
+//                                    solved_db.createDate = solve.createDate;
+//                                    solved_db.content = solve.content;
+//                                    solved_db.state = 0;
+//                                    solved_db.timeline = solve.timeline;
+//                                    solved_db.catalog = solve.catalog;
+//                                    solved_db.date = solve.date;
+//
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
+//
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).removeValue();
+//                                    database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solve.createDate).setValue(solved_db);
+//                                }
+//                            }
+//                        });
+
                         showDaliyTodo.addView(tr);
                     }
                 }
@@ -186,11 +331,12 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
         database.child("daily").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                itemIDArray.clear();
+                itemIDArrayForRow.clear();
+                idx = 0;
                 showDaliyTodo.removeViews(1,showDaliyTodo.getChildCount() - 1);
                 final String currDate = Long.toString(cal.get(Calendar.YEAR) * 1000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DATE));
                 DataSnapshot today = snapshot.child(currDate);
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 4; i++) {
                     DataSnapshot currData = today.child(Integer.toString(i));
                     for (DataSnapshot childData : currData.getChildren()) {
                         DailyDB currDailyDB = childData.getValue(DailyDB.class);
@@ -203,7 +349,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         else textView1.setBackgroundColor(Color.parseColor("#92b5d8"));
                         textView1.setText("");
                         textView1.setGravity(Gravity.CENTER);
-                        textView1.setPadding(3,5,3,5);
+                        textView1.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params1.weight = 0.15f;
                         textView1.setLayoutParams(params1);
@@ -211,23 +357,75 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         TextView textView2 = new TextView(getContext());
                         textView2.setText(currDailyDB.content);
                         textView2.setGravity(Gravity.CENTER);
-                        textView2.setPadding(3,5,3,5);
+                        textView2.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params2.weight = 0.7f;
                         textView2.setLayoutParams(params2);
 
                         CheckBox cb = new CheckBox(getContext());
                         cb.setGravity(Gravity.CENTER);
-                        cb.setPadding(3,5,3,5);
+                        cb.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params3.weight = 0.15f;
                         cb.setLayoutParams(params3);
-                        cb.setId(itemIDArray.size() - 1);
+                        tr.setId(idx++);
+                        itemIDArrayForRow.add(currDailyDB);
+                        tr.setClickable(true);
 
+                        tr.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                TodoAddedDialog e = TodoAddedDialog.getInstance();
+                                Bundle args = new Bundle();
+                                args.putInt("state",1);
+                                DailyDB curr = itemIDArrayForRow.get(v.getId());
+                                args.putString("createdDate",curr.createDate);
+                                args.putString("content",curr.content);
+                                args.putString("catalog",curr.catalog);
+                                args.putInt("timeline",curr.timeline);
+                                args.putString("currDate", dateTime);
+                                args.putLong("dateLong", curr.date);
+                                System.out.println(curr.createDate);
+                                e.setArguments(args);
+                                e.show(getChildFragmentManager(), TodoAddedDialog.TAG_EVENT_DIALOG);
+                            }
+                        });
+
+                        cb.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Status s = Status.getInstance();
+                                Bundle bundle = new Bundle();
+                                int i = rootView.getId();
+                                DailyDB solve = itemIDArrayForRow.get(i+1);
+
+                                bundle.putString("createdDate",solve.createDate);
+                                bundle.putInt("timeline",solve.timeline);
+                                bundle.putLong("dateLong", solve.date);
+                                bundle.putString("content",solve.content);
+                                bundle.putString("catalog",solve.catalog);
+                                bundle.putString("currDate", dateTime);
+
+                                s.setArguments(bundle);
+                                s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
+                            }
+                        });
+
+                        int id = rootView.getId();
+                        DailyDB solve = itemIDArrayForRow.get(id+1);
+                        if(i==3) {
+                            tr.setBackgroundColor(Color.parseColor("#ededed"));
+                            textView1.setBackgroundColor(Color.parseColor("#BDBDBD"));
+                            textView2.setTextColor(Color.parseColor("#9b9b9b"));
+                            cb.setChecked(true);
+                        } else if(database.child("daily").child(Long.toString(solve.date)).child("3").child(solve.createDate) == null){
+                            cb.setChecked(false);
+                        }
 
                         tr.addView(textView1);
                         tr.addView(textView2);
                         tr.addView(cb);
+
                         showDaliyTodo.addView(tr);
                     }
                 }
