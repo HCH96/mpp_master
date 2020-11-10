@@ -88,13 +88,9 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
             setCancelable(false);
             return v;
         }else{
-            items.add("미정");
-            items.add("공부");
-            items.add("과제");
-            items.add("운동");
             View v = inflater.inflate(R.layout.todo_popup, container, false);
-            //spinner = (Spinner) v.findViewById(R.id.category_spinner);
-            ArrayAdapter<String> adapterArray = new ArrayAdapter<String>(v.getContext(), android.R.layout.simple_spinner_dropdown_item, items);
+            spinner = (Spinner) v.findViewById(R.id.category_spinner);
+            ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
             bt_cancel = v.findViewById(R.id.bt_cancel);
