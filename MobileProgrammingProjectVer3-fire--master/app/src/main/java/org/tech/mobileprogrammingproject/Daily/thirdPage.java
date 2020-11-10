@@ -1,8 +1,13 @@
 package org.tech.mobileprogrammingproject.Daily;
 import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +29,13 @@ import com.google.firebase.database.ValueEventListener;
 import org.tech.mobileprogrammingproject.FIREBASEDB.MemoDB;
 import org.tech.mobileprogrammingproject.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class thirdPage extends Fragment{
     /*
@@ -40,22 +53,19 @@ public class thirdPage extends Fragment{
 
     황교민 2020.09.24
     * SQLite로 DB를 구현하였음. 메모장의 내용을 저장하도록 DB에 연결함.
-    
-    황교민 2020.10.24
-    1. firebase db변경함.
      */
 
     static DatabaseReference database = null;
     MemoDB memodb = null;
     static EditText contents;
     TextView memo;
-    Button saveButton, clearButton;
+    Button saveButton, clearButton, instaButton;
     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Bitmap captureView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.thirdpage, container, false);
-
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState){
+        final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.thirdpage, container, false);
         memo = rootView.findViewById(R.id.title);
         memo.setPaintFlags(memo.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
@@ -63,6 +73,27 @@ public class thirdPage extends Fragment{
 
         saveButton = rootView.findViewById(R.id.saveButton);
         clearButton = rootView.findViewById(R.id.clearButton);
+        instaButton = rootView.findViewById(R.id.insta);
+
+        instaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rootView.setDrawingCacheEnabled(true);
+                Bitmap screenshot = rootView.getDrawingCache();
+                String filename = "screenshot.png";
+                try {
+                    File f = new File(Environment.getExternalStorageDirectory(), filename);
+                    f.createNewFile();
+                    OutputStream outStream = new FileOutputStream(f);
+                    screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                rootView.setDrawingCacheEnabled(false);
+            }
+        });
+
 
         clearButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -83,6 +114,7 @@ public class thirdPage extends Fragment{
         changeMemo(dateTime);
         return rootView;
     }
+
     /*
         2020.11.01 황교민
         메모 내용을 바꾸는 메소드 생성.

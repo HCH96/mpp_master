@@ -123,7 +123,7 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
             }
             content.setText(getArguments().getString("content"));
             switch (getArguments().getString("catalog")){
-                case "미정":
+                case "미지정":
                     spinner.setSelection(0);
                     break;
                 case "공부":
