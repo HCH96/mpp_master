@@ -84,7 +84,7 @@ public class Stats extends AppCompatActivity {
 
                                         /* TODO: 2020-11-12
                                             이 부분에서 textView를 추가하여 category_sumTime을 모두 출력해보았는데 값이 잘 출력되지만
-                                            116-125 line에서는 0 값으로 초기화되어 pieChart가 생성되지 않습니다.
+                                            119-128 line에서는 0 값으로 초기화되어 pieChart가 생성되지 않습니다.
                                         */
                                     }
                                 }
