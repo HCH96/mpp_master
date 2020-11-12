@@ -2,11 +2,11 @@ package org.tech.mobileprogrammingproject.Daily;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -15,93 +15,31 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.tech.mobileprogrammingproject.FIREBASEDB.DailyDB;
 import org.tech.mobileprogrammingproject.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-
-//임시 데이터 12시 34분 >> 1234 (24시간제)
-class Data {
-    public String content;
-    public int startTime;
-    public int endTime;
-
-    public Data(){
-    }
-
-    public Data(String content, int startTime, int endTime){
-        this.content = content;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-}
 
 
 public class secondPage extends Fragment {
     public static String dateTime = "";
+
     // null Action에 대해서 같은 색으로 처리하기 위해서
     public ArrayList<Integer> nullActionIdx = new ArrayList<>();
+
     // 몇개의 할일 덩어리가 있는지 파악하기 위해서
     public int idx;
+    static DatabaseReference database = null;
 
-    Data data1 = new Data("공부", 1414 , 1630 );
-    Data data2 = new Data("TV", 1739, 1830);
-    Data data3 = new Data("Youtube", 1900, 2200);
-    Data data4 = new Data("잠자기", 10,1000);
 
     ArrayList<String> timetable = new ArrayList<>(144);
-
-
-    private void setting(Data data) {
-
-        int starttime = ((data.startTime/100)*60 +(data.startTime-(data.startTime/100)*100))/10;
-        int endtime = ((data.endTime/100)*60 + (data.endTime-(data.endTime/100)*100))/10;
-        String content = data.content;
-
-        for(int i =starttime; i<endtime; i++){
-            timetable.set(i,content);
-        }
-    }
-
-
-    private ArrayList<PieEntry> setpiedata(){
-
-        for(int i =0; i<144; i++){
-            timetable.add(" ");
-        }
-        setting(data1);
-        setting(data2);
-        setting(data3);
-        setting(data4);
-
-        ArrayList<PieEntry> piedata = new ArrayList<>();
-        float piesize = 0f;
-        String precontent = timetable.get(0);
-        idx = 0;
-        if(precontent.equals(" ")) nullActionIdx.add(idx);
-        // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
-        //piedata.add(new PieEntry(piesize, precontent));
-        for(int i =0; i<timetable.size(); i++){
-            if(precontent != timetable.get(i)){
-                piedata.add(new PieEntry(piesize, precontent));
-                piesize =0f;
-                precontent = timetable.get(i);
-                idx++;
-                if(precontent.equals(" ")) nullActionIdx.add(idx);
-            }else{
-                piesize = piesize+1f;
-                precontent = timetable.get(i);
-            }
-        }
-        piedata.add(new PieEntry(piesize,precontent));
-        return piedata;
-    }
 
 
     @Override
@@ -112,6 +50,7 @@ public class secondPage extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
 
         PieDataSet pieDataSet = new PieDataSet(setpiedata(), "오늘 한 일");
         pieDataSet.setSliceSpace(3f);
@@ -139,18 +78,7 @@ public class secondPage extends Fragment {
                 colors.add(colorForAct.get(colorIdx++));
             }
         }
-        /*
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-        */
+
         pieDataSet.setColors(colors);
 
         PieData pieData = new PieData(pieDataSet);
@@ -170,5 +98,64 @@ public class secondPage extends Fragment {
         description.setText("오늘 한 일"); //라벨
         description.setTextSize(15);
         pieChart.setDescription(description);
+    }
+
+    public void setting() {
+        FirebaseDatabase mdata = FirebaseDatabase.getInstance();
+        DatabaseReference mRef = mdata.getReference("daily/"+dateTime+"/3");
+
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot Snapshot : snapshot.getChildren()){
+                    DailyDB get = Snapshot.getValue(DailyDB.class);
+
+                    int starttime = ((get.startTime/100)*60 +(get.startTime-(get.startTime/100)*100))/10;
+                    int endtime = ((get.endTime/100)*60 + (get.endTime-(get.endTime/100)*100))/10;
+                    String content = get.content;
+
+                    for(int i =starttime; i<endtime; i++){
+                        timetable.set(i,content);
+                    }
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+
+    private ArrayList<PieEntry> setpiedata(){
+
+        for(int i =0; i<144; i++){
+            timetable.add(" ");
+        }
+
+        setting();
+
+
+        ArrayList<PieEntry> piedata = new ArrayList<>();
+        float piesize = 0f;
+        String precontent = timetable.get(0);
+        idx = 0;
+        if(precontent.equals(" ")) nullActionIdx.add(idx);
+        // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
+        //piedata.add(new PieEntry(piesize, precontent));
+        for(int i =0; i<timetable.size(); i++){
+            if(precontent != timetable.get(i)){
+                piedata.add(new PieEntry(piesize, precontent));
+                piesize =0f;
+                precontent = timetable.get(i);
+                idx++;
+                if(precontent.equals(" ")) nullActionIdx.add(idx);
+            }else{
+                piesize = piesize+1f;
+                precontent = timetable.get(i);
+            }
+        }
+        piedata.add(new PieEntry(piesize,precontent));
+        return piedata;
     }
 }
