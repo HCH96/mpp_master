@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.tech.mobileprogrammingproject.Monthly.Calender;
+import org.tech.mobileprogrammingproject.Monthly.User;
 import org.tech.mobileprogrammingproject.R;
 import org.tech.mobileprogrammingproject.Monthly.Search;
 import org.tech.mobileprogrammingproject.Monthly.Stats;
@@ -76,6 +77,11 @@ public class MainActivity extends FragmentActivity{
 
     public void goToStatcs(View v){
         Intent intent = new Intent(getApplicationContext(), Stats.class);
+        startActivity(intent);
+    }
+
+    public void goToUser(View v){
+        Intent intent = new Intent(getApplicationContext(), User.class);
         startActivity(intent);
     }
 

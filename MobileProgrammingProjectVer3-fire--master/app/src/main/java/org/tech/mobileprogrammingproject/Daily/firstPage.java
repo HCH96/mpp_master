@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import static org.tech.mobileprogrammingproject.Daily.thirdPage.changeMemo;
 import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
+import static org.tech.mobileprogrammingproject.Daily.secondPage.changeState;
 
 public class firstPage extends Fragment implements DatePickerDialog.OnDateSetListener{
 
@@ -74,6 +75,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
         showDaliyTodo = rootView.findViewById(R.id.todolist);
         //firebase 연결.
         database = FirebaseDatabase.getInstance().getReference();
+
 
         // 어플 구동 시 초기 값 지정
         bt_date.setText((cal.get(Calendar.MONTH)+1) + "월 " + cal.get(Calendar.DATE) + "일");
@@ -267,6 +269,8 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                 // 사용자가 선택한 날짜를 공유하는 static 변수인 dateTime이 변경되었을 경우, fragment에서는 변화를 인식하지 못함.
                 // changeMemo메소드를 import하여 memo의 내용을 수정하도록 함.
                 changeMemo(dateTime);
+
+                changeState(dateTime);
             }
 
 

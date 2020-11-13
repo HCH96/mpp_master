@@ -32,14 +32,14 @@ public class secondPage extends Fragment {
     public static String dateTime = "";
 
     // null Action에 대해서 같은 색으로 처리하기 위해서
-    public ArrayList<Integer> nullActionIdx = new ArrayList<>();
+    public static ArrayList<Integer> nullActionIdx = new ArrayList<>();
 
     // 몇개의 할일 덩어리가 있는지 파악하기 위해서
     public int idx;
     static DatabaseReference database = null;
+    public static PieChart pieChart;
 
-
-    ArrayList<String> timetable = new ArrayList<>(144);
+    static ArrayList<String> timetable = new ArrayList<>(144);
 
 
     @Override
@@ -84,7 +84,6 @@ public class secondPage extends Fragment {
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueTextSize(0);
 
-        PieChart pieChart;
         pieChart = getView().findViewById(R.id.picChart);
         pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setDrawEntryLabels(true);
@@ -99,7 +98,92 @@ public class secondPage extends Fragment {
         description.setTextSize(15);
         pieChart.setDescription(description);
     }
+    public static void changeState(String date){
+        timetable.clear();
+        for(int i =0; i<144; i++){
+            timetable.add(" ");
+        }
+        FirebaseDatabase mdata = FirebaseDatabase.getInstance();
+        DatabaseReference mRef = mdata.getReference("daily/"+date+"/3");
 
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot Snapshot : snapshot.getChildren()){
+                    DailyDB get = Snapshot.getValue(DailyDB.class);
+
+                    int starttime = ((get.startTime/100)*60 +(get.startTime-(get.startTime/100)*100))/10;
+                    int endtime = ((get.endTime/100)*60 + (get.endTime-(get.endTime/100)*100))/10;
+                    String content = get.content;
+
+                    for(int i =starttime; i<endtime; i++){
+                        timetable.set(i,content);
+                    }
+
+                }
+                ArrayList<PieEntry> piedata = new ArrayList<>();
+                float piesize = 0f;
+                String precontent = timetable.get(0);
+                int idxSub = 0;
+                nullActionIdx.clear();
+                if(precontent.equals(" ")) nullActionIdx.add(idxSub);
+                // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
+                //piedata.add(new PieEntry(piesize, precontent));
+                for(int i =0; i<timetable.size(); i++){
+                    if(precontent != timetable.get(i)){
+                        piedata.add(new PieEntry(piesize, precontent));
+                        piesize =0f;
+                        precontent = timetable.get(i);
+                        idxSub++;
+                        if(precontent.equals(" ")) nullActionIdx.add(idxSub);
+                    }else{
+                        piesize = piesize+1f;
+                        precontent = timetable.get(i);
+                    }
+                }
+                piedata.add(new PieEntry(piesize,precontent));
+                PieDataSet pieDataSet = new PieDataSet(piedata, "오늘 한 일");
+                pieDataSet.setSliceSpace(3f);
+                pieDataSet.setSelectionShift(5f);
+
+                ArrayList<Integer> colors = new ArrayList<Integer>();
+                ArrayList<Integer> colorForAct = new ArrayList<>();
+                for (int c : ColorTemplate.VORDIPLOM_COLORS)
+                    colorForAct.add(c);
+                int colorIdx = 0;
+                for(int i = 0 ; i < idxSub + 1 ; i++){
+                    if(nullActionIdx.contains(i)) {
+                        colors.add(ColorTemplate.JOYFUL_COLORS[0]);
+                    }
+                    else {
+                        colors.add(colorForAct.get(colorIdx++));
+                    }
+                }
+
+                pieDataSet.setColors(colors);
+
+                PieData pieData = new PieData(pieDataSet);
+                pieData.setValueTextSize(0);
+                pieChart.clear();
+                //pieChart = findViewById(R.id.picChart);
+                pieChart.setEntryLabelColor(Color.BLACK);
+                pieChart.setDrawEntryLabels(true);
+                pieChart.setRotationEnabled(false);
+                pieChart.setUsePercentValues(false);
+                pieChart.setCenterTextSize(25);
+                pieChart.setHoleRadius(30);
+                pieChart.setData(pieData);
+
+                Description description = new Description();
+                description.setText("오늘 한 일"); //라벨
+                description.setTextSize(15);
+                pieChart.setDescription(description);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
     public void setting() {
         FirebaseDatabase mdata = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mdata.getReference("daily/"+dateTime+"/3");
