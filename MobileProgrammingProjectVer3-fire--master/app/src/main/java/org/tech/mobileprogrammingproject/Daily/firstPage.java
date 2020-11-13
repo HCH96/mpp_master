@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static org.tech.mobileprogrammingproject.Daily.thirdPage.changeMemo;
-import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
 import static org.tech.mobileprogrammingproject.Daily.secondPage.changeState;
 
 public class firstPage extends Fragment implements DatePickerDialog.OnDateSetListener{
@@ -49,6 +48,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
     bt_add.setOnClickListener: 할 일 추가 팝업 onClick 구현
  */
     private Button bt_date;
+    public static String dateTime;
     private Button bt_add;
     private DatePickerDialog dateDialog;
     private LinearLayout showDaliyTodo;
@@ -115,6 +115,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
 
 
         dateTime = Integer.toString(cal.get(Calendar.YEAR) * 1000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DAY_OF_MONTH));
+        changeState(dateTime);
         return rootView;
 
     }

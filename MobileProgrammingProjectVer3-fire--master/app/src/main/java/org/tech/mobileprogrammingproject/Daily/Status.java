@@ -34,7 +34,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
+import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 
 public class Status extends DialogFragment implements View.OnClickListener {
 
@@ -45,10 +45,10 @@ public class Status extends DialogFragment implements View.OnClickListener {
     private Button bt_done;
     private Calendar currentTime;
 
-    int startHour = 98;
-    int startMin = 98;
-    int endHour = 99;
-    int endMin = 99;
+    int startHour = 30;
+    int startMin = 90;
+    int endHour = 40;
+    int endMin = 100;
 
     String createdDate;
     String content;
@@ -266,8 +266,8 @@ public class Status extends DialogFragment implements View.OnClickListener {
                     timeUpdateDb.timeline = 3;
                     timeUpdateDb.catalog = catalog;
                     timeUpdateDb.date = dateLong;
-                    timeUpdateDb.startTime = 9999;
-                    timeUpdateDb.endTime = 9999;
+                    timeUpdateDb.startTime = 0;
+                    timeUpdateDb.endTime = 0;
 
                     database.child("daily").child(Long.toString(timeUpdateDb.date)).child(String.valueOf(timeline)).child(timeUpdateDb.createDate).removeValue();
 

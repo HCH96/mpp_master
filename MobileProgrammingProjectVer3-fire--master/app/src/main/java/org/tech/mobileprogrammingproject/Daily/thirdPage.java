@@ -1,5 +1,5 @@
 package org.tech.mobileprogrammingproject.Daily;
-import static org.tech.mobileprogrammingproject.Daily.secondPage.dateTime;
+import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 
 import android.graphics.Paint;
 import android.os.Bundle;

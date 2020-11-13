@@ -23,13 +23,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.tech.mobileprogrammingproject.FIREBASEDB.DailyDB;
 import org.tech.mobileprogrammingproject.R;
-
+import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 import java.util.ArrayList;
-
+import java.util.Calendar;
 
 
 public class secondPage extends Fragment {
-    public static String dateTime = "";
 
     // null Action에 대해서 같은 색으로 처리하기 위해서
     public static ArrayList<Integer> nullActionIdx = new ArrayList<>();
@@ -38,25 +37,16 @@ public class secondPage extends Fragment {
     public int idx;
     static DatabaseReference database = null;
     public static PieChart pieChart;
-
+    Calendar cal = Calendar.getInstance();
+    ViewGroup rootView;
     static ArrayList<String> timetable = new ArrayList<>(144);
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        rootView = (ViewGroup) inflater.inflate(R.layout.secondpage, container, false);
         nullActionIdx.clear();
-        return (ViewGroup) inflater.inflate(R.layout.secondpage, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-
-
-        PieDataSet pieDataSet = new PieDataSet(setpiedata(), "오늘 한 일");
-        pieDataSet.setSliceSpace(3f);
-        pieDataSet.setSelectionShift(5f);
-
-        ArrayList<Integer> colors = new ArrayList<Integer>();
+        pieChart = rootView.findViewById(R.id.picChart);
         /*
             2020.11.06 황교민
             null Action에 대해서 같은 색상으로 표시하기 위해서 nullActionIdx를 받아옴.
@@ -66,58 +56,28 @@ public class secondPage extends Fragment {
             2. 만약에 표시할 수 없을 정도로 작은 할일은 어떻게 처리할 것인가(즉 10분 미만의 할일)
              => 아마도 layout을 하나 더 만들어서 동적으로 할일을 표시하면 가능할 듯 하다.
          */
-        ArrayList<Integer> colorForAct = new ArrayList<>();
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colorForAct.add(c);
-        int colorIdx = 0;
-        for(int i = 0 ; i < idx + 1 ; i++){
-            if(nullActionIdx.contains(i)) {
-                colors.add(ColorTemplate.JOYFUL_COLORS[0]);
-            }
-            else {
-                colors.add(colorForAct.get(colorIdx++));
-            }
-        }
-
-        pieDataSet.setColors(colors);
-
-        PieData pieData = new PieData(pieDataSet);
-        pieData.setValueTextSize(0);
-
-        pieChart = getView().findViewById(R.id.picChart);
-        pieChart.setEntryLabelColor(Color.BLACK);
-        pieChart.setDrawEntryLabels(true);
-        pieChart.setRotationEnabled(false);
-        pieChart.setUsePercentValues(false);
-        pieChart.setCenterTextSize(25);
-        pieChart.setHoleRadius(30);
-        pieChart.setData(pieData);
-
-        Description description = new Description();
-        description.setText("오늘 한 일"); //라벨
-        description.setTextSize(15);
-        pieChart.setDescription(description);
+        return rootView;
     }
-    public static void changeState(String date){
+    public static void changeState(String date) {
         timetable.clear();
-        for(int i =0; i<144; i++){
+        for (int i = 0; i < 144; i++) {
             timetable.add(" ");
         }
         FirebaseDatabase mdata = FirebaseDatabase.getInstance();
-        DatabaseReference mRef = mdata.getReference("daily/"+date+"/3");
+        DatabaseReference mRef = mdata.getReference("daily/" + date + "/3");
 
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot Snapshot : snapshot.getChildren()){
+                for (DataSnapshot Snapshot : snapshot.getChildren()) {
                     DailyDB get = Snapshot.getValue(DailyDB.class);
 
-                    int starttime = ((get.startTime/100)*60 +(get.startTime-(get.startTime/100)*100))/10;
-                    int endtime = ((get.endTime/100)*60 + (get.endTime-(get.endTime/100)*100))/10;
+                    int starttime = ((get.startTime / 100) * 60 + (get.startTime - (get.startTime / 100) * 100)) / 10;
+                    int endtime = ((get.endTime / 100) * 60 + (get.endTime - (get.endTime / 100) * 100)) / 10;
                     String content = get.content;
 
-                    for(int i =starttime; i<endtime; i++){
-                        timetable.set(i,content);
+                    for (int i = starttime; i < endtime; i++) {
+                        timetable.set(i, content);
                     }
 
                 }
@@ -126,22 +86,22 @@ public class secondPage extends Fragment {
                 String precontent = timetable.get(0);
                 int idxSub = 0;
                 nullActionIdx.clear();
-                if(precontent.equals(" ")) nullActionIdx.add(idxSub);
+                if (precontent.equals(" ")) nullActionIdx.add(idxSub);
                 // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
                 //piedata.add(new PieEntry(piesize, precontent));
-                for(int i =0; i<timetable.size(); i++){
-                    if(precontent != timetable.get(i)){
+                for (int i = 0; i < timetable.size(); i++) {
+                    if (precontent != timetable.get(i)) {
                         piedata.add(new PieEntry(piesize, precontent));
-                        piesize =0f;
+                        piesize = 0f;
                         precontent = timetable.get(i);
                         idxSub++;
-                        if(precontent.equals(" ")) nullActionIdx.add(idxSub);
-                    }else{
-                        piesize = piesize+1f;
+                        if (precontent.equals(" ")) nullActionIdx.add(idxSub);
+                    } else {
+                        piesize = piesize + 1f;
                         precontent = timetable.get(i);
                     }
                 }
-                piedata.add(new PieEntry(piesize,precontent));
+                piedata.add(new PieEntry(piesize, precontent));
                 PieDataSet pieDataSet = new PieDataSet(piedata, "오늘 한 일");
                 pieDataSet.setSliceSpace(3f);
                 pieDataSet.setSelectionShift(5f);
@@ -151,11 +111,10 @@ public class secondPage extends Fragment {
                 for (int c : ColorTemplate.VORDIPLOM_COLORS)
                     colorForAct.add(c);
                 int colorIdx = 0;
-                for(int i = 0 ; i < idxSub + 1 ; i++){
-                    if(nullActionIdx.contains(i)) {
+                for (int i = 0; i < idxSub + 1; i++) {
+                    if (nullActionIdx.contains(i)) {
                         colors.add(ColorTemplate.JOYFUL_COLORS[0]);
-                    }
-                    else {
+                    } else {
                         colors.add(colorForAct.get(colorIdx++));
                     }
                 }
@@ -179,12 +138,20 @@ public class secondPage extends Fragment {
                 description.setTextSize(15);
                 pieChart.setDescription(description);
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
     }
-    public void setting() {
+
+/*
+    private ArrayList<PieEntry> setpiedata(){
+        timetable.clear();
+        for(int i =0; i<144; i++){
+            timetable.add(" ");
+        }
+
         FirebaseDatabase mdata = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mdata.getReference("daily/"+dateTime+"/3");
 
@@ -208,16 +175,6 @@ public class secondPage extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-
-    private ArrayList<PieEntry> setpiedata(){
-
-        for(int i =0; i<144; i++){
-            timetable.add(" ");
-        }
-
-        setting();
 
 
         ArrayList<PieEntry> piedata = new ArrayList<>();
@@ -242,4 +199,6 @@ public class secondPage extends Fragment {
         piedata.add(new PieEntry(piesize,precontent));
         return piedata;
     }
+
+ */
 }

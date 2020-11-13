@@ -29,8 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.tech.mobileprogrammingproject.FIREBASEDB.DailyDB;
+import org.tech.mobileprogrammingproject.FIREBASEDB.categoryDB;
 import org.tech.mobileprogrammingproject.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -55,7 +57,7 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     Calendar cal;
     EditText content;
     ImageButton delBtn;
-    List<String> items = new ArrayList<>();
+    ArrayList<String> list = new ArrayList<>();
 
     public static final String TAG_EVENT_DIALOG = "dialog_event";
     public static TodoAddedDialog getInstance() {
@@ -71,6 +73,31 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
         if(getArguments().getInt("state") == 0) {
             View v = inflater.inflate(R.layout.todo_popup, container, false);
             spinner = (Spinner) v.findViewById(R.id.category_spinner);
+
+            database.child("category").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(!snapshot.exists()){
+                        list.add("미정");
+                        list.add("공부");
+                        list.add("과제");
+                    }else {
+                        for (DataSnapshot childData : snapshot.getChildren()) {
+                            categoryDB currData = childData.getValue(categoryDB.class);
+                            list.add(currData.categoryName);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            //ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, list);
+            //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            //spinner.setAdapter(spinnerAdapter);
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
@@ -90,6 +117,31 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
         }else{
             View v = inflater.inflate(R.layout.todo_popup, container, false);
             spinner = (Spinner) v.findViewById(R.id.category_spinner);
+
+            database.child("category").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(!snapshot.exists()){
+                        list.add("미정");
+                        list.add("공부");
+                        list.add("과제");
+                    }else {
+                        for (DataSnapshot childData : snapshot.getChildren()) {
+                            categoryDB currData = childData.getValue(categoryDB.class);
+                            list.add(currData.categoryName);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            //ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, list);
+            //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            //spinner.setAdapter(spinnerAdapter);
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
