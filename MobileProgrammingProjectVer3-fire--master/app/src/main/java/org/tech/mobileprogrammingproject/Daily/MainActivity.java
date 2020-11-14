@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 
 import org.tech.mobileprogrammingproject.Monthly.Calender;
 import org.tech.mobileprogrammingproject.Monthly.User;
@@ -77,13 +78,10 @@ public class MainActivity extends FragmentActivity{
 
     public void goToStatcs(View v){
         Intent intent = new Intent(getApplicationContext(), Stats.class);
+        intent.putExtra("month",dateTime.substring(3,5));
         startActivity(intent);
     }
 
-    public void goToUser(View v){
-        Intent intent = new Intent(getApplicationContext(), User.class);
-        startActivity(intent);
-    }
 
     @Override
     public void onBackPressed(){

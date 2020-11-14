@@ -37,35 +37,28 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * TodoAddedDialog.java
- * 주요 기능: 할 일 추가 팝업
- *
- * 2020.11.14 (마지막 수정)
- * @author 김지원
- */
-
 public class TodoAddedDialog extends DialogFragment implements View.OnClickListener {
 
-    // variables
-    private Button bt_cancel; // 등록 취소 버튼
-    private Button bt_listUp; // 할 일 등록 버튼
-    private RadioGroup timeGroup; // 3분할 설정 RadioGroup
-    private ImageButton delBtn; // 삭제 버튼
-    EditText content; // 할 일 입력 EditText
-    Spinner spinner; // 카테고리 설정 spinner
+    /*
+    1. variables :
+        bt_cancel : (등록) 취소 버튼
+        bt_listUp : 할 일 추가 버튼
+        et_todo : dialog에서 입력받은 할 일(EditText)
+    2. functions:
+*/
 
-    // firebase 연결 및 DB 변수
+    private Button bt_cancel;
+    private Button bt_listUp;
     DatabaseReference database = null;
+    private RadioGroup timeGroup;
+    private LinearLayout todolist;
+    Spinner spinner;
     DailyDB dailydb = null;
-
-
-    // 카테고리 이름을 담기 위한 String ArrayList
+    Calendar cal;
+    EditText content;
+    ImageButton delBtn;
     ArrayList<String> list = new ArrayList<>();
 
-    Calendar cal;
-
-    // 새로운 TodoAddedDialog 생성 및 return
     public static final String TAG_EVENT_DIALOG = "dialog_event";
     public static TodoAddedDialog getInstance() {
         TodoAddedDialog e = new TodoAddedDialog();
@@ -76,72 +69,18 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        // firebase 연결
         database = FirebaseDatabase.getInstance().getReference();
-
-        // 신규 생성 시
         if(getArguments().getInt("state") == 0) {
-            // todo_popup layout과 spinner layout 받아옴
             View v = inflater.inflate(R.layout.todo_popup, container, false);
             spinner = (Spinner) v.findViewById(R.id.category_spinner);
 
-            // 사용자 카테고리 생성을 위해 addValueEventListener 구현
             database.child("category").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // 추가된 카테고리가 없을 경우 기본 카테고리 제공
                     if(!snapshot.exists()){
                         list.add("미정");
                         list.add("공부");
                         list.add("과제");
-                        list.add("운동");
-                    }else {
-                        for (DataSnapshot childData : snapshot.getChildren()) {
-                            categoryDB currData = childData.getValue(categoryDB.class);
-                            list.add(currData.categoryName);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-            ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
-            adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(adapterArray);
-            cal = Calendar.getInstance();
-
-            // layout과 button 연결
-            content = v.findViewById(R.id.add_todo);
-            bt_cancel = v.findViewById(R.id.bt_cancel);
-            bt_listUp = v.findViewById(R.id.bt_listUp);
-            timeGroup = v.findViewById(R.id.time_group);
-
-            // 구현해둔 OnClick 함수 연결
-            bt_cancel.setOnClickListener(this);
-            bt_listUp.setOnClickListener(this);
-            setCancelable(false);
-            return v;
-
-        } else { // 기존 할 일 수정
-            // todo_popup layout과 spinner layout 받아옴
-            View v = inflater.inflate(R.layout.todo_popup, container, false);
-            spinner = (Spinner) v.findViewById(R.id.category_spinner);
-
-            // 사용자 카테고리 생성을 위해 addValueEventListener 구현
-            database.child("category").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // 추가된 카테고리가 없을 경우 기본 카테고리 제공
-                    if(!snapshot.exists()){
-                        list.add("미정");
-                        list.add("공부");
-                        list.add("과제");
-                        list.add("운동");
                     }else {
                         for (DataSnapshot childData : snapshot.getChildren()) {
                             categoryDB currData = childData.getValue(categoryDB.class);
@@ -163,15 +102,54 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
             cal = Calendar.getInstance();
+            content = v.findViewById(R.id.add_todo);
+            database = FirebaseDatabase.getInstance().getReference();
 
-            // layout과 button 연결
+            bt_cancel = v.findViewById(R.id.bt_cancel);
+            bt_listUp = v.findViewById(R.id.bt_listUp);
+
+            todolist = v.findViewById(R.id.todolist);
+            timeGroup = v.findViewById(R.id.time_group);
+            bt_cancel.setOnClickListener(this);
+            bt_listUp.setOnClickListener(this);
+            setCancelable(false);
+            return v;
+        }else{
+            View v = inflater.inflate(R.layout.todo_popup, container, false);
+            spinner = (Spinner) v.findViewById(R.id.category_spinner);
+
+            database.child("category").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(!snapshot.exists()){
+                        list.add("미정");
+                        list.add("공부");
+                        list.add("과제");
+                    }else {
+                        for (DataSnapshot childData : snapshot.getChildren()) {
+                            categoryDB currData = childData.getValue(categoryDB.class);
+                            list.add(currData.categoryName);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            //ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, list);
+            //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            //spinner.setAdapter(spinnerAdapter);
+            ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
+            adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapterArray);
             bt_cancel = v.findViewById(R.id.bt_cancel);
             bt_listUp = v.findViewById(R.id.bt_listUp);
             content = v.findViewById(R.id.add_todo);
+            cal = Calendar.getInstance();
             delBtn = v.findViewById(R.id.delBtn);
-            timeGroup = v.findViewById(R.id.time_group);
-
-            // 삭제 버튼 구현
             delBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -179,13 +157,13 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                     dismiss();
                 }
             });
-
-            // 구현해둔 OnClick 함수 연결
+            todolist = v.findViewById(R.id.todolist);
+            timeGroup = v.findViewById(R.id.time_group);
             bt_cancel.setOnClickListener(this);
+            // 기존의 것 수정하기.
             bt_listUp.setOnClickListener(this);
             setCancelable(false);
 
-            // 기존 할 일 수정 시 timeline 정보를 받아와 해당 timeGroup에 체크해줌
             switch (getArguments().getInt("timeline")){
                 case 0:
                     timeGroup.check(R.id.time1);
@@ -197,10 +175,7 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                     timeGroup.check(R.id.time3);
                     break;
             }
-            // 기존 할 일 수정 시 할 일 내용을 받아와 EditText에 넣어줌
             content.setText(getArguments().getString("content"));
-
-            // 기존 할 일 수정 시 category 정보를 받아와 Spinner에서 select해줌
             switch (getArguments().getString("catalog")){
                 case "미정":
                     spinner.setSelection(0);
@@ -222,14 +197,10 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_listUp: //확인 버튼을 눌렀을 때
-
-                // 입력된 할 일이 없는 경우
                 if (content.getText().toString().equals("")) {
                     Toast.makeText(v.getContext(), "할 일이 입력되지 않았습니다.", Toast.LENGTH_LONG).show();
                     break;
                 }
-
-                // 기존에 등록되어 있던 할 일을 수정한 경우
                 if(getArguments().getInt("state") == 1){
                     System.out.println(Long.toString(getArguments().getLong("dateLong")));
                     System.out.println(Integer.toString(getArguments().getInt("timeline")));
@@ -274,7 +245,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                     }
                 }
 
-                // 할 일 신규 등록 시
                 if (timeGroup.getCheckedRadioButtonId() == R.id.time1) {
                     dailydb = new DailyDB();
                     dailydb.createDate = cal.getTime().toString();
