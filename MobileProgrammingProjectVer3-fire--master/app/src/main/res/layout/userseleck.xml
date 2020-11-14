@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#4c6588"
+        android:gravity="center"
+        android:text="사용자 설정"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/radio_group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:text="3분할 구성"
+        android:textStyle="bold" />
+
+
+    <Button
+        android:id="@+id/addTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="3분할 구성 변경하기" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/color1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#ccdeeb"
+            android:text="" />
+
+        <EditText
+            android:id="@+id/radio_group1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:layout_weight="2"
+            android:backgroundTint="#ccdeeb"
+            android:gravity="center_horizontal"
+            android:selectAllOnFocus="true" />
+
+        <TextView
+            android:id="@+id/color2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#B4D3E7"
+            android:text="" />
+
+        <EditText
+            android:id="@+id/radio_group2"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:layout_weight="2"
+            android:backgroundTint="#B4D3E7"
+            android:gravity="center_horizontal"
+            android:selectAllOnFocus="true" />
+
+        <TextView
+            android:id="@+id/color3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#92b5d8"
+            android:text="" />
+
+        <EditText
+            android:id="@+id/radio_group3"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:layout_weight="2"
+            android:backgroundTint="#92b5d8"
+            android:gravity="center_horizontal"
+            android:selectAllOnFocus="true" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/category_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:text="카테고리"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/addCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="카테고리 추가하기 버튼" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:paddingLeft="30dp"
+            android:text="카테고리 입력 :" />
+
+        <EditText
+            android:id="@+id/userCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="추가할 카테고리를 입력해주세요"
+            android:inputType="textPersonName" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/showCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+</LinearLayout>

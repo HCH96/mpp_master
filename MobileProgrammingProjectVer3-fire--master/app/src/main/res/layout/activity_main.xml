@@ -140,6 +140,7 @@
                         android:text="통계"
                         android:textColor="#FFFFFF" />
                 </TableRow>
+
             </TableLayout>
         </LinearLayout>
     </LinearLayout>
