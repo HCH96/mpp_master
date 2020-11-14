@@ -108,12 +108,12 @@ public class secondPage extends Fragment {
 
                 ArrayList<Integer> colors = new ArrayList<Integer>();
                 ArrayList<Integer> colorForAct = new ArrayList<>();
-                for (int c : ColorTemplate.VORDIPLOM_COLORS)
+                for (int c : ColorTemplate.LIBERTY_COLORS)
                     colorForAct.add(c);
                 int colorIdx = 0;
                 for (int i = 0; i < idxSub + 1; i++) {
                     if (nullActionIdx.contains(i)) {
-                        colors.add(ColorTemplate.JOYFUL_COLORS[0]);
+                        colors.add(Color.parseColor("#f6f6f6"));
                     } else {
                         colors.add(colorForAct.get(colorIdx++));
                     }
@@ -133,6 +133,15 @@ public class secondPage extends Fragment {
                 pieChart.setHoleRadius(30);
                 pieChart.setData(pieData);
 
+                /*
+                2020.11.14 김지원
+                UI 수정
+                */
+                pieChart.setDrawHoleEnabled(false); // 차트 가운데 hole 제거
+                pieChart.getLegend().setEnabled(false); // 범례 안 보이도록 설정
+                pieDataSet.setSliceSpace(0.0f); // 그래프 조각 사이 여백 설정
+
+
                 Description description = new Description();
                 description.setText("오늘 한 일"); //라벨
                 description.setTextSize(15);
@@ -151,32 +160,25 @@ public class secondPage extends Fragment {
         for(int i =0; i<144; i++){
             timetable.add(" ");
         }
-
         FirebaseDatabase mdata = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mdata.getReference("daily/"+dateTime+"/3");
-
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot Snapshot : snapshot.getChildren()){
                     DailyDB get = Snapshot.getValue(DailyDB.class);
-
                     int starttime = ((get.startTime/100)*60 +(get.startTime-(get.startTime/100)*100))/10;
                     int endtime = ((get.endTime/100)*60 + (get.endTime-(get.endTime/100)*100))/10;
                     String content = get.content;
-
                     for(int i =starttime; i<endtime; i++){
                         timetable.set(i,content);
                     }
-
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
-
         ArrayList<PieEntry> piedata = new ArrayList<>();
         float piesize = 0f;
         String precontent = timetable.get(0);
@@ -199,6 +201,5 @@ public class secondPage extends Fragment {
         piedata.add(new PieEntry(piesize,precontent));
         return piedata;
     }
-
  */
 }
