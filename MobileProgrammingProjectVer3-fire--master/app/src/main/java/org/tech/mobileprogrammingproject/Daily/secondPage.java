@@ -140,12 +140,9 @@ public class secondPage extends Fragment {
                 pieChart.setDrawHoleEnabled(false); // 차트 가운데 hole 제거
                 pieChart.getLegend().setEnabled(false); // 범례 안 보이도록 설정
                 pieDataSet.setSliceSpace(0.0f); // 그래프 조각 사이 여백 설정
+                pieChart.getDescription().setEnabled(false); // 설명 레이블 제거
 
 
-                Description description = new Description();
-                description.setText("오늘 한 일"); //라벨
-                description.setTextSize(15);
-                pieChart.setDescription(description);
             }
 
             @Override

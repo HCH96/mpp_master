@@ -48,16 +48,12 @@ public class thirdPage extends Fragment{
     static DatabaseReference database = null;
     MemoDB memodb = null;
     static EditText contents;
-    TextView memo;
     Button saveButton, clearButton;
     SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.thirdpage, container, false);
-
-        memo = rootView.findViewById(R.id.title);
-        memo.setPaintFlags(memo.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         contents = rootView.findViewById(R.id.contents);
 
