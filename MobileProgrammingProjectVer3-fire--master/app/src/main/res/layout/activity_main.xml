@@ -72,7 +72,7 @@
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#333333"
+        android:background="#23292E"
         tools:ignore="MissingConstraints">
 
 
@@ -86,13 +86,13 @@
 
             <TextView
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#DDDAFFFF"
-                android:gravity="center_horizontal"
+                android:layout_height="60dp"
+                android:background="#2B3339"
+                android:gravity="center"
                 android:text="메뉴"
-                android:textAlignment="center"
                 android:textColor="#ffffff"
-                android:textSize="30sp" />
+                android:textSize="25sp"
+                android:textStyle="bold"/>
 
             <TableLayout
                 android:id="@+id/monthlyCategory"
@@ -110,22 +110,22 @@
                     <Button
                         android:id="@+id/navi_btn1"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
-                        android:background="#333333"
+                        android:background="#23292E"
                         android:onClick="goToCalander"
-                        android:text="월별캘린더"
+                        android:text="월별 캘린더"
                         android:textColor="#FFFFFF" />
                 </TableRow>
                 <TableRow>
                     <Button
                         android:id="@+id/navi_btn2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
-                        android:background="#333333"
+                        android:background="#23292E"
                         android:onClick="goToSearch"
-                        android:text="할일검색"
+                        android:text="할 일 검색"
                         android:textColor="#FFFFFF" />
                 </TableRow>
                 <TableRow>
@@ -133,9 +133,9 @@
                     <Button
                         android:id="@+id/navi_btn3"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
-                        android:background="#333333"
+                        android:background="#23292E"
                         android:onClick="goToStatcs"
                         android:text="통계"
                         android:textColor="#FFFFFF" />
