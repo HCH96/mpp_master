@@ -74,11 +74,12 @@
 
     <Button
         android:id="@+id/selectDate"
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_width="95dp"
+        android:layout_height="35dp"
         android:layout_gravity="right"
         android:layout_marginRight="10dp"
-        android:text="날짜 선택" />
+        android:background="#CDD2DC"
+        android:text="종료일 선택" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -107,20 +108,23 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_gravity="right"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="35dp"
+            android:background="#CDD2DC"
             android:text="취소" />
 
         <Button
             android:id="@+id/register"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
+            android:background="#CDD2DC"
             android:text="등록" />
     </LinearLayout>
 
