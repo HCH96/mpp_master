@@ -81,9 +81,9 @@ public class Search extends AppCompatActivity {
                             DailyDB get = Snapshot3.getValue(DailyDB.class);
                             String[] info = {get.catalog, get.content, String.valueOf(get.date)};
                             info[2] = info[2].substring(3,7);
-                            info[2] = insert(info[2], 2,"월 ");
-                            info[2] = insert(info[2], 6,"일 ");
-                            String result = setTextLength(info[2],20) +setTextLength(info[0],15) +setTextLength(info[1],10);
+                            info[2] = insert(info[2], 2,"월   ");
+                            info[2] = insert(info[2], 8,"일 ");
+                            String result ="   " + setTextLength(info[0],20) +setTextLength(info[2],25) +setTextLength(info[1],10);
                             arraylist.add(result);
                         }
                     }
@@ -101,12 +101,12 @@ public class Search extends AppCompatActivity {
                 arraylist2.clear();
                 for (DataSnapshot mSnapshot : snapshot.getChildren()) {
                     MonthlyDB get = mSnapshot.getValue(MonthlyDB.class);
-                    DateFormat start = new SimpleDateFormat("MM월 dd일");
+                    DateFormat start = new SimpleDateFormat("MM월   dd일");
                     String str_start = start.format(get.startPoint);
-                    DateFormat end = new SimpleDateFormat("MM월 dd일");
+                    DateFormat end = new SimpleDateFormat("MM월   dd일");
                     String str_end = end.format(get.endPoint);
                     String[] minfo = {get.content, str_start, str_end};
-                    String result = setTextLength(minfo[1], 1) + " ~ " + setTextLength(minfo[2], 10) + " " + setTextLength(minfo[0], 10);
+                    String result = "   " +setTextLength(minfo[1], 1) + "    ~    " + setTextLength(minfo[2], 30) + " " + setTextLength(minfo[0], 10);
                     arraylist2.add(result);
                 }
             }
