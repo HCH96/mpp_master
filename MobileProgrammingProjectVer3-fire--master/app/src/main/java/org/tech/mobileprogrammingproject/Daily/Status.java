@@ -36,7 +36,7 @@ import java.util.Calendar;
 
 import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 
-public class Status extends DialogFragment implements View.OnClickListener {
+public class Status extends DialogFragment {
 
     private EditText et_startTime;
     private EditText et_endTime;
@@ -67,7 +67,7 @@ public class Status extends DialogFragment implements View.OnClickListener {
     ArrayList<Integer> endArray = new ArrayList<>();
 
     public static final String TAG_STATUS_DIALOG = "status_event";
-    public static Status getInstance() {
+    public static Status getinstance() {
         Status s = new Status();
         return s;
     }
@@ -83,7 +83,7 @@ public class Status extends DialogFragment implements View.OnClickListener {
         bt_cancelDone = v.findViewById(R.id.bt_cancelDone);
         bt_done = v.findViewById(R.id.bt_done);
         cb_none = v.findViewById(R.id.cb_none);
-
+/*
         et_startTime.setOnClickListener(this);
         et_startTime.setFocusable(false);
         et_endTime.setOnClickListener(this);
@@ -91,6 +91,7 @@ public class Status extends DialogFragment implements View.OnClickListener {
         bt_cancelDone.setOnClickListener(this);
         bt_done.setOnClickListener(this);
 
+ */
         database = FirebaseDatabase.getInstance().getReference();
 
         createdDate = getArguments().getString("createdDate");
@@ -115,15 +116,6 @@ public class Status extends DialogFragment implements View.OnClickListener {
 
             }
         });
-
-        setCancelable(false);
-        return v;
-    }
-
-
-    @Override
-    public void onClick(View v) {
-
         et_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -318,5 +310,8 @@ public class Status extends DialogFragment implements View.OnClickListener {
             }
         });
 
+
+        setCancelable(false);
+        return v;
     }
 }
