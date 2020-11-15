@@ -184,8 +184,8 @@ public class Status extends DialogFragment implements View.OnClickListener {
                 cancelDb.catalog = catalog;
                 cancelDb.date = dateLong;
 
-                database.child("daily").child(Long.toString(dateLong)).child(String.valueOf(timeline)).child(createdDate).removeValue();
-                database.child("daily").child(Long.toString(dateLong)).child(String.valueOf(timeline)).child(createdDate).setValue(cancelDb);
+                //database.child("daily").child(Long.toString(dateLong)).child(String.valueOf(timeline)).child(createdDate).removeValue();
+                //database.child("daily").child(Long.toString(dateLong)).child(String.valueOf(timeline)).child(createdDate).setValue(cancelDb);
                 dismiss();
             }
         });

@@ -128,10 +128,11 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 itemIDArrayForRow.clear();
+                itemIDArrayForRow.add(new DailyDB());
                 showDaliyTodo.removeViews(1,showDaliyTodo.getChildCount() - 1);
                 dateTime = Integer.toString(dateDialog.getDatePicker().getYear() * 1000 + (dateDialog.getDatePicker().getMonth() + 1) * 100 + dateDialog.getDatePicker().getDayOfMonth());
                 DataSnapshot today = snapshot.child(dateTime);
-                idx = 0;
+                idx = 1;
                 for (int i = 0; i < 4; i++) {
                     DataSnapshot currData = today.child(Integer.toString(i));
                     for (DataSnapshot childData : currData.getChildren()) {
@@ -158,7 +159,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         params2.weight = 0.7f;
                         textView2.setLayoutParams(params2);
 
-                        CheckBox cb = new CheckBox(getContext());
+                        Button cb = new Button(getContext());
                         cb.setGravity(Gravity.CENTER);
                         cb.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -170,12 +171,12 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                             tr.setBackgroundColor(Color.parseColor("#ededed"));
                             textView1.setBackgroundColor(Color.parseColor("#BDBDBD"));
                             textView2.setTextColor(Color.parseColor("#9b9b9b"));
-                            cb.setChecked(true);
-                        } else cb.setChecked(false);
+                        }
 
                         tr.addView(textView1);
                         tr.addView(textView2);
                         tr.addView(cb);
+                        cb.setId(-idx);
 
                         tr.setId(idx++);
                         itemIDArrayForRow.add(currDailyDB);
@@ -188,7 +189,8 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 TodoAddedDialog e = TodoAddedDialog.getInstance();
                                 Bundle args = new Bundle();
                                 args.putInt("state",1);
-                                DailyDB curr = itemIDArrayForRow.get(v.getId());
+                                int i = v.getId();
+                                DailyDB curr = itemIDArrayForRow.get(i);
                                 args.putString("createdDate",curr.createDate);
                                 args.putString("content",curr.content);
                                 args.putString("catalog",curr.catalog);
@@ -201,6 +203,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 Toast.makeText(v.getContext(), "안녕안녕", Toast.LENGTH_SHORT).show();
                             }
                         });
+                        /*
 
                         tr.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
@@ -225,13 +228,15 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                             }
                         });
 
+                         */
+
                         cb.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Status s = Status.getInstance();
                                 Bundle bundle = new Bundle();
-                                int i = rootView.getId();
-                                DailyDB solve = itemIDArrayForRow.get(i+1);
+                                int i = v.getId();
+                                DailyDB solve = itemIDArrayForRow.get((-1 * i));
 
                                 bundle.putString("createdDate",solve.createDate);
                                 bundle.putInt("timeline",solve.timeline);
@@ -250,17 +255,17 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 solved_db.catalog = solve.catalog;
                                 solved_db.date = solve.date;
 
-                                database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solved_db.createDate).removeValue();
+                                //database.child("daily").child(Long.toString(solved_db.date)).child(String.valueOf(solve.timeline)).child(solved_db.createDate).removeValue();
 
-                                database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
-                                database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).setValue(solved_db);
+                                //database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).removeValue();
+                                //database.child("daily").child(Long.toString(solved_db.date)).child("3").child(solved_db.createDate).setValue(solved_db);
 
                                 s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
                             }
                         });
                         if(currDailyDB.timeline == 3) {
                             tr.setEnabled(false);
-                            cb.setEnabled(false);
+                            cb.setVisibility(View.INVISIBLE);
                         }
                         showDaliyTodo.addView(tr);
                     }
@@ -286,8 +291,9 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 itemIDArrayForRow.clear();
+                itemIDArrayForRow.add(new DailyDB());
                 itemID.clear();
-                idx = 0;
+                idx = 1;
                 showDaliyTodo.removeViews(1,showDaliyTodo.getChildCount() - 1);
                 final String currDate = Long.toString(cal.get(Calendar.YEAR) * 1000 + (cal.get(Calendar.MONTH) + 1) * 100 + cal.get(Calendar.DATE));
                 DataSnapshot today = snapshot.child(currDate);
@@ -317,12 +323,13 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         params2.weight = 0.7f;
                         textView2.setLayoutParams(params2);
 
-                        CheckBox cb = new CheckBox(getContext());
-                        cb.setGravity(Gravity.CENTER);
+                        Button cb = new Button(getContext());
                         cb.setPadding(3,10,3,10);
                         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                         params3.weight = 0.15f;
                         cb.setLayoutParams(params3);
+
+                        cb.setId(-1 * idx);
                         tr.setId(idx++);
                         itemIDArrayForRow.add(currDailyDB);
                         tr.setClickable(true);
@@ -333,7 +340,8 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 TodoAddedDialog e = TodoAddedDialog.getInstance();
                                 Bundle args = new Bundle();
                                 args.putInt("state",1);
-                                DailyDB curr = itemIDArrayForRow.get(v.getId());
+                                int i = v.getId();
+                                DailyDB curr = itemIDArrayForRow.get(i);
                                 args.putString("createdDate",curr.createDate);
                                 args.putString("content",curr.content);
                                 args.putString("catalog",curr.catalog);
@@ -351,8 +359,8 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                             public void onClick(View v) {
                                 Status s = Status.getInstance();
                                 Bundle bundle = new Bundle();
-                                int i = rootView.getId();
-                                DailyDB solve = itemIDArrayForRow.get(i+1);
+                                int i = v.getId();
+                                DailyDB solve = itemIDArrayForRow.get((-1 * i));
 
                                 bundle.putInt("cbId",v.getId());
                                 bundle.putString("createdDate",solve.createDate);
@@ -369,7 +377,7 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                         });
                         if(currDailyDB.timeline == 3) {
                             tr.setEnabled(false);
-                            cb.setEnabled(false);
+                            cb.setVisibility(View.INVISIBLE);
                         }
                         int id = rootView.getId();
                         DailyDB solve = itemIDArrayForRow.get(id+1);
@@ -377,9 +385,6 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                             tr.setBackgroundColor(Color.parseColor("#ededed"));
                             textView1.setBackgroundColor(Color.parseColor("#BDBDBD"));
                             textView2.setTextColor(Color.parseColor("#9b9b9b"));
-                            cb.setChecked(true);
-                        } else if(database.child("daily").child(Long.toString(solve.date)).child("3").child(solve.createDate) == null){
-                            cb.setChecked(false);
                         }
 
                         tr.addView(textView1);

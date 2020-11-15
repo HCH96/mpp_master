@@ -95,9 +95,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                 }
             });
 
-            //ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, list);
-            //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            //spinner.setAdapter(spinnerAdapter);
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
@@ -139,9 +136,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                 }
             });
 
-            //ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_spinner_item, list);
-            //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            //spinner.setAdapter(spinnerAdapter);
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
