@@ -5,15 +5,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,9 +22,10 @@ import org.tech.mobileprogrammingproject.FIREBASEDB.DailyDB;
 import org.tech.mobileprogrammingproject.FIREBASEDB.MonthlyDB;
 import org.tech.mobileprogrammingproject.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceConfigurationError;
 
 public class Search extends AppCompatActivity {
 
@@ -101,10 +99,14 @@ public class Search extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arraylist2.clear();
-                for (DataSnapshot mSnapshot : snapshot.getChildren()){
+                for (DataSnapshot mSnapshot : snapshot.getChildren()) {
                     MonthlyDB get = mSnapshot.getValue(MonthlyDB.class);
-                    String[] minfo = {get.content, String.valueOf(get.startPoint), String.valueOf(get.endPoint)};
-                    String result =setTextLength(minfo[1], 10)+ " "+setTextLength(minfo[2], 10)+ " "+setTextLength(minfo[0], 10);
+                    DateFormat start = new SimpleDateFormat("MM월 dd일");
+                    String str_start = start.format(get.startPoint);
+                    DateFormat end = new SimpleDateFormat("MM월 dd일");
+                    String str_end = end.format(get.endPoint);
+                    String[] minfo = {get.content, str_start, str_end};
+                    String result = setTextLength(minfo[1], 1) + " ~ " + setTextLength(minfo[2], 10) + " " + setTextLength(minfo[0], 10);
                     arraylist2.add(result);
                 }
             }
