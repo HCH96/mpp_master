@@ -135,7 +135,7 @@ public class secondPage extends Fragment {
 
                 /*
                 2020.11.14 김지원
-                UI 수정
+                pieChart UI 수정
                 */
                 pieChart.setDrawHoleEnabled(false); // 차트 가운데 hole 제거
                 pieChart.getLegend().setEnabled(false); // 범례 안 보이도록 설정
