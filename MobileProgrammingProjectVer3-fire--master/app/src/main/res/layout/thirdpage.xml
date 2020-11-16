@@ -18,8 +18,8 @@
 
     <EditText
         android:id="@+id/contents"
-        android:layout_width="354dp"
-        android:layout_height="550dp"
+        android:layout_width="350dp"
+        android:layout_height="478dp"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
         android:background="@drawable/border_of_memo_content"
