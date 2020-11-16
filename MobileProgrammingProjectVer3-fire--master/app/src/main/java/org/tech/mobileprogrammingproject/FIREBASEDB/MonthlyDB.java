@@ -8,9 +8,9 @@ import java.util.Map;
     1. SQLite로 데이터를 실시간으로 보여주기에 한계가 있어서 Firebase로 연동함.
  */
 public class MonthlyDB {
-    public String content;
-    public long startPoint;
-    public long endPoint;
+    public String content; // monthly 할일의 내용을 담는 필드
+    public long startPoint; // 시작 지점 설정(calendar -> long으로 변환) ex.2020.10.12부분을 long변환 (시간은 0시 기준으로 함)
+    public long endPoint;// 종료 지점 설정(calendar -> long으로 변환) ex.2020.10.12부분을 long변환 (시간은 0시 기준으로 함)
 
     public MonthlyDB(){
 
