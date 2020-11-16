@@ -32,7 +32,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-// TODO: 2020-11-14 한 달 단위로 (월 별 통계이므로) 초기화 되도록 해야함 
+/**
+ * Stats.java
+ * 주요 기능: 카테고리 별 시간 통계
+ *
+ * 2020.11.14 (마지막 Comment 수정)
+ * @author 김지원
+ */
+
 public class Stats extends AppCompatActivity {
 
     //variables
