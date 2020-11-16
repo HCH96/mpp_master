@@ -65,17 +65,17 @@ public class MainActivity extends FragmentActivity{
 
         viewPager.setOffscreenPageLimit(3);
     }
-
+    // drawer을 통해서 월별 할일 페이지로 이동
     public void goToCalander(View v){
         Intent intent = new Intent(getApplicationContext(), Calender.class);
         startActivity(intent);
     }
-
+    // drawer을 통해서 검색 페이지로 이동
     public void goToSearch(View v){
         Intent intent = new Intent(getApplicationContext(), Search.class);
         startActivity(intent);
     }
-
+    // drawer을 통해서 통계페이지로 이동
     public void goToStatcs(View v){
         Intent intent = new Intent(getApplicationContext(), Stats.class);
         intent.putExtra("month",dateTime.substring(3,5));
