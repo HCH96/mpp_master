@@ -45,7 +45,7 @@ public class thirdPage extends Fragment{
     1. firebase db변경함.
      */
 
-    static DatabaseReference database = null;
+    static DatabaseReference database = null; // firebase db연결을 위함.
     MemoDB memodb = null;
     static EditText contents;
     Button saveButton, clearButton;
@@ -55,19 +55,19 @@ public class thirdPage extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.thirdpage, container, false);
 
-        contents = rootView.findViewById(R.id.contents);
+        contents = rootView.findViewById(R.id.contents); // 메모 내용을 표시하는 곳
 
-        saveButton = rootView.findViewById(R.id.saveButton);
-        clearButton = rootView.findViewById(R.id.clearButton);
+        saveButton = rootView.findViewById(R.id.saveButton); // 저장버튼
+        clearButton = rootView.findViewById(R.id.clearButton); // 초기화 버튼
 
         clearButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 contents.setText("");
             }
-        });
+        }); // 초기화 버튼 클릭시 동작 내용(기존의 입력된 내용을 삭제)
 
-        database = FirebaseDatabase.getInstance().getReference();
+        database = FirebaseDatabase.getInstance().getReference(); // firebasedb연결
 
         saveButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -75,8 +75,8 @@ public class thirdPage extends Fragment{
                 memodb = new MemoDB(dateTime, contents.getText().toString());
                 database.child("memo").child(dateTime).setValue(memodb);
             }
-        });
-        changeMemo(dateTime);
+        });// 저장버튼 클릭시 메모 내용 저장(db내)
+        changeMemo(dateTime); // 저장된 db내용을 화면에 보여주는 메소드
         return rootView;
     }
     /*
@@ -87,17 +87,17 @@ public class thirdPage extends Fragment{
         database.child("memo").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean isIn = false;
+                boolean isIn = false;// 해당 날짜의 메모가 있는지 확인하는 변수
                 for(DataSnapshot childSnapshot : snapshot.getChildren()) {
                     MemoDB currmemoDB = childSnapshot.getValue(MemoDB.class);
                     if(currmemoDB.createdDate.equals(currDate)){
-                        contents.setText(currmemoDB.memo);
+                        contents.setText(currmemoDB.memo); // 만약에 해당 날짜의 내용이 있으면 보여주는 기능
                         isIn = true;
                         break;
                     }
                 }
                 if (!isIn){
-                    contents.setText("");
+                    contents.setText(""); // 만약에 해당 날짜의 내용이 없으면 "" 으로 화면에 표시
                 }
             }
 
