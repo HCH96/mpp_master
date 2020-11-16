@@ -97,7 +97,7 @@ public class monthlyPopup extends AppCompatActivity {
             public void onClick(View v) {
                 if(content.getText().toString().equals("")){
                     Toast.makeText(monthlyPopup.this, "할일을 입력해주세요", Toast.LENGTH_SHORT).show();
-                }else{
+                } else{
                     Date start = null;
                     try {
                         start = transFormat.parse(startDate.getText().toString());
@@ -114,10 +114,15 @@ public class monthlyPopup extends AppCompatActivity {
                     System.out.println(end.toString());
                     calStart.setTime(start);
                     calEnd.setTime(end);
-                    monthlydb = new MonthlyDB(content.getText().toString(),calStart.getTimeInMillis(), calEnd.getTimeInMillis());
-                    Date id = new Date();
-                    database.child("monthly").child(id.toString()).setValue(monthlydb);
-                    finish();
+                    // start날짜가 end날짜보다 클 경우 예외처리
+                    if(calStart.getTimeInMillis() > calEnd.getTimeInMillis()){
+                        Toast.makeText(monthlyPopup.this, "다시 입력해주세요", Toast.LENGTH_SHORT).show();
+                    }else {
+                        monthlydb = new MonthlyDB(content.getText().toString(), calStart.getTimeInMillis(), calEnd.getTimeInMillis());
+                        Date id = new Date();
+                        database.child("monthly").child(id.toString()).setValue(monthlydb);
+                        finish();
+                    }
                 }
             }
         });

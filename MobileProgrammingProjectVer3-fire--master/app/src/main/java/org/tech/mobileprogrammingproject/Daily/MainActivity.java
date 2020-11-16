@@ -12,7 +12,6 @@ import android.view.View;
 import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 
 import org.tech.mobileprogrammingproject.Monthly.Calender;
-import org.tech.mobileprogrammingproject.Monthly.User;
 import org.tech.mobileprogrammingproject.R;
 import org.tech.mobileprogrammingproject.Monthly.Search;
 import org.tech.mobileprogrammingproject.Monthly.Stats;

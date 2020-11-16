@@ -249,7 +249,6 @@ public class firstPage extends Fragment implements DatePickerDialog.OnDateSetLis
                                 bundle.putString("currDate", dateTime);
                                 s.setArguments(bundle);
 
-                                System.out.println(111);
                                 s.show(getChildFragmentManager(), Status.TAG_STATUS_DIALOG);
                             }
                         });

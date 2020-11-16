@@ -104,18 +104,19 @@ public class Calender extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         itemIDArray.clear();
                         calender.removeDecorators();
-                        calender.addDecorators(new oneDayDacorator());
+                        calender.addDecorators(new oneDayDacorator()); // 선택한 날짜를 진하게 표시함.
                         showTodos.removeViews(1,showTodos.getChildCount() - 1);
                         //Iterator<DataSnapshot> dataSnapshots = snapshot.getChildren().iterator();
                         for(DataSnapshot childSnapshot : snapshot.getChildren()) {
                             itemIDArray.add(childSnapshot.getKey());
                             MonthlyDB currMonDB = childSnapshot.getValue(MonthlyDB.class);
+                            // 할일이 있는 날짜에 빨간 점을 표시하기 위함. k의 증가율은 하루를 long으로 환산한것임.
                             for(long k = currMonDB.startPoint ; k <= currMonDB.endPoint ; k += 1000 * 60 * 60 * 24){
                                 Date temp = new Date();
                                 temp.setTime(k);
                                 calender.addDecorators(new EventDecorator(Color.RED, Collections.singletonList(CalendarDay.from(temp))));
                             }
-
+                            // 사용자가 선택한 날짜가 childsnapshot에서 받아온 날짜 사이에 있으면 showtodo에 할일을 상세히 표시함.
                             if(currMonDB.startPoint <= userSelectDateInt && userSelectDateInt <= currMonDB.endPoint) {
                                 LinearLayout tr = new LinearLayout(getApplicationContext());
                                 tr.setOrientation(LinearLayout.HORIZONTAL);
