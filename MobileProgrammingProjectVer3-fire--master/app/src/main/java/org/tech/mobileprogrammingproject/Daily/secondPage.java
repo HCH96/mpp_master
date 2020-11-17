@@ -39,6 +39,11 @@ public class secondPage extends Fragment {
     public static PieChart pieChart;
     Calendar cal = Calendar.getInstance();
     ViewGroup rootView;
+
+    /*
+    하루 24시간을 10분단위로 나누어서 144개의 index를 가진 Arraylist로 표현한다.
+    ex) 2시 10분 >> 2x60+10 = 130이므로 index는 13
+    */
     static ArrayList<String> timetable = new ArrayList<>(144);
 
 
@@ -58,80 +63,104 @@ public class secondPage extends Fragment {
          */
         return rootView;
     }
+
+    //새로운 data가 추가 될 때마다 reflesh하는 메소드
     public static void changeState(String date) {
+
+        //새로운 database를 반영하기위해 기존 timetable 초기화
         timetable.clear();
         for (int i = 0; i < 144; i++) {
             timetable.add(" ");
         }
+
+        //get database reference
         FirebaseDatabase mdata = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mdata.getReference("daily/" + date + "/3");
+
 
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot Snapshot : snapshot.getChildren()) {
+
+                    //database에서 원하는 데이터(starttime,endtime,content)를 읽기
                     DailyDB get = Snapshot.getValue(DailyDB.class);
 
+                    //읽어온 데이터를 이용하기 위해 내가 원하는 형식으로 변환
                     int starttime = ((get.startTime / 100) * 60 + (get.startTime - (get.startTime / 100) * 100)) / 10;
                     int endtime = ((get.endTime / 100) * 60 + (get.endTime - (get.endTime / 100) * 100)) / 10;
                     String content = get.content;
 
+                    //변환된 데이터를 timetable에 저장
                     for (int i = starttime; i < endtime; i++) {
                         timetable.set(i, content);
                     }
 
                 }
+
+                //원형차트 데이터 생성
                 ArrayList<PieEntry> piedata = new ArrayList<>();
-                float piesize = 0f;
-                String precontent = timetable.get(0);
+                float piesize = 0f; //항목당 차지하는 pie의 크기를 나타내는 변수
+                String precontent = timetable.get(0); //항목을 구분해주기위해 이전 index의 항목을 저장해주는 변수(초기값은 timetable의 첫번째 값)
                 int idxSub = 0;
                 nullActionIdx.clear();
                 if (precontent.equals(" ")) nullActionIdx.add(idxSub);
                 // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
                 //piedata.add(new PieEntry(piesize, precontent));
+
+                //모든 timetable을 돌면서 할일 항목 덩어리마다 데이터를 pieEntry로 저장해준다.
                 for (int i = 0; i < timetable.size(); i++) {
+
+                    //이전 index의 content와 현재 index의 context가 다르다면 이전 content는 그 시간부로 끝난 것이므로 데이터를 저장한다.
                     if (precontent != timetable.get(i)) {
                         piedata.add(new PieEntry(piesize, precontent));
-                        piesize = 0f;
-                        precontent = timetable.get(i);
-                        idxSub++;
-                        if (precontent.equals(" ")) nullActionIdx.add(idxSub);
+                        piesize = 0f; //pie 크기 데이터를 이미 넘겨주었으므로 다시 0으로 초기화
+                        precontent = timetable.get(i); // 새로운 content의 데이터를 처리해야 하므로 precontent의 값도 다음 항목의 데이터로 지정
+                        idxSub++; //다음 항목으로 넘어갔으므로 1을 더해준다.
+                        if (precontent.equals(" ")) nullActionIdx.add(idxSub); //만약 처리한 content가 null content일 경우 색을 같게 해주기위해 index를 따로 저장한다.
                     } else {
+                        //이전 index와 현재 index의 content가 같다면 content가 끝나지 않은 것이므로 index만큼의 pie의 크기를 더해준다.
                         piesize = piesize + 1f;
                         precontent = timetable.get(i);
                     }
                 }
+                //마지막 index 할 일의 pieentry 데이터를 추가
                 piedata.add(new PieEntry(piesize, precontent));
-                PieDataSet pieDataSet = new PieDataSet(piedata, "오늘 한 일");
-                pieDataSet.setSliceSpace(3f);
-                pieDataSet.setSelectionShift(5f);
 
+                //piedata로 넘겨줄 컬러를 저장하는 list
                 ArrayList<Integer> colors = new ArrayList<Integer>();
+                //사용할 color를 저장해주는 list
                 ArrayList<Integer> colorForAct = new ArrayList<>();
+                //ColorTemplate.LIBERTY_COLORS로부터 color들을 저장
                 for (int c : ColorTemplate.LIBERTY_COLORS)
                     colorForAct.add(c);
                 int colorIdx = 0;
+                //idxsub를 탐색하면서 색깔을 지정
                 for (int i = 0; i < idxSub + 1; i++) {
-                    if (nullActionIdx.contains(i)) {
+                    if (nullActionIdx.contains(i)) { //만약 idxsub에 저장된 content가 null content라면 한가지 색으로 통일
                         colors.add(Color.parseColor("#f6f6f6"));
-                    } else {
+                    } else { //null content가 아니라면 모든 content의 색을 다르게 함
                         colors.add(colorForAct.get(colorIdx++));
                     }
                 }
 
+                //dataset 생성
+                PieDataSet pieDataSet = new PieDataSet(piedata, "오늘 한 일");
+                pieDataSet.setSelectionShift(5f);//pie chart 크기
+
+                //piedata에 color를 넘겨줌
                 pieDataSet.setColors(colors);
 
+                //piedata에 piedataset 전달
                 PieData pieData = new PieData(pieDataSet);
-                pieData.setValueTextSize(0);
+                pieData.setValueTextSize(0);//pie의 크기
+
                 pieChart.clear();
-                //pieChart = findViewById(R.id.picChart);
-                pieChart.setEntryLabelColor(Color.BLACK);
-                pieChart.setDrawEntryLabels(true);
-                pieChart.setRotationEnabled(false);
-                pieChart.setUsePercentValues(false);
-                pieChart.setCenterTextSize(25);
-                pieChart.setHoleRadius(30);
-                pieChart.setData(pieData);
+                pieChart.setEntryLabelColor(Color.BLACK); //Label color
+                pieChart.setDrawEntryLabels(true); //Label 표시
+                pieChart.setRotationEnabled(false); //piechart 회전x
+                pieChart.setUsePercentValues(false); //퍼센트로 표시x
+                pieChart.setData(pieData); //data 전달
 
                 /*
                 2020.11.14 김지원
@@ -151,52 +180,4 @@ public class secondPage extends Fragment {
         });
     }
 
-/*
-    private ArrayList<PieEntry> setpiedata(){
-        timetable.clear();
-        for(int i =0; i<144; i++){
-            timetable.add(" ");
-        }
-        FirebaseDatabase mdata = FirebaseDatabase.getInstance();
-        DatabaseReference mRef = mdata.getReference("daily/"+dateTime+"/3");
-        mRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot Snapshot : snapshot.getChildren()){
-                    DailyDB get = Snapshot.getValue(DailyDB.class);
-                    int starttime = ((get.startTime/100)*60 +(get.startTime-(get.startTime/100)*100))/10;
-                    int endtime = ((get.endTime/100)*60 + (get.endTime-(get.endTime/100)*100))/10;
-                    String content = get.content;
-                    for(int i =starttime; i<endtime; i++){
-                        timetable.set(i,content);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-        ArrayList<PieEntry> piedata = new ArrayList<>();
-        float piesize = 0f;
-        String precontent = timetable.get(0);
-        idx = 0;
-        if(precontent.equals(" ")) nullActionIdx.add(idx);
-        // 처음에 덩어리를 생성하여 오류가 계속 발생하였습니다.
-        //piedata.add(new PieEntry(piesize, precontent));
-        for(int i =0; i<timetable.size(); i++){
-            if(precontent != timetable.get(i)){
-                piedata.add(new PieEntry(piesize, precontent));
-                piesize =0f;
-                precontent = timetable.get(i);
-                idx++;
-                if(precontent.equals(" ")) nullActionIdx.add(idx);
-            }else{
-                piesize = piesize+1f;
-                precontent = timetable.get(i);
-            }
-        }
-        piedata.add(new PieEntry(piesize,precontent));
-        return piedata;
-    }
- */
 }
