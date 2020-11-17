@@ -27,6 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+    /**
+     * Search.java
+     * 주요 기능 : daily, monthly 검색 기능
+     * Written by 한창희
+     */
+
 public class Search extends AppCompatActivity {
 
     private List<String> list; //데이터를 넣은 리스트변수(daily)

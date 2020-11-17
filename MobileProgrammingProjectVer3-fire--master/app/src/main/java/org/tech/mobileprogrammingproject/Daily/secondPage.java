@@ -27,6 +27,11 @@ import static org.tech.mobileprogrammingproject.Daily.firstPage.dateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+    /**
+      * secondPage.java
+      * 주요 기능 : 당일 완료한 일을 24시간제 원형 시간표로 표시
+      * Written by 한창희
+     */
 
 public class secondPage extends Fragment {
 
