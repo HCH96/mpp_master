@@ -78,11 +78,13 @@ public class Search extends AppCompatActivity {
                 for (DataSnapshot Snapshot : snapshot.getChildren()) {
                     for(DataSnapshot Snapshot2 : Snapshot.getChildren()){
                         for(DataSnapshot Snapshot3 : Snapshot2.getChildren()){
+                            //daily database를 돌면서 원하는 데이터를 가공하여 string info에 저장한다.
                             DailyDB get = Snapshot3.getValue(DailyDB.class);
                             String[] info = {get.catalog, get.content, String.valueOf(get.date)};
                             info[2] = info[2].substring(3,7);
                             info[2] = insert(info[2], 2,"월   ");
                             info[2] = insert(info[2], 8,"일 ");
+                            //문자열들을 합쳐 데이터를 저장해준다.
                             String result ="   " + setTextLength(info[0],20) +setTextLength(info[2],25) +setTextLength(info[1],10);
                             arraylist.add(result);
                         }
@@ -100,12 +102,14 @@ public class Search extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arraylist2.clear();
                 for (DataSnapshot mSnapshot : snapshot.getChildren()) {
+                    //monthly database를 돌면서 원하는 데이터를 가공하여 string minfo에 저장한다.
                     MonthlyDB get = mSnapshot.getValue(MonthlyDB.class);
                     DateFormat start = new SimpleDateFormat("MM월   dd일");
                     String str_start = start.format(get.startPoint);
                     DateFormat end = new SimpleDateFormat("MM월   dd일");
                     String str_end = end.format(get.endPoint);
                     String[] minfo = {get.content, str_start, str_end};
+                    //문자열들을 합쳐 출력할 데이터를 저장해준다.
                     String result = "   " +setTextLength(minfo[1], 1) + "    ~    " + setTextLength(minfo[2], 30) + " " + setTextLength(minfo[0], 10);
                     arraylist2.add(result);
                 }
@@ -132,14 +136,14 @@ public class Search extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 //input창에 문자를 입력할 때마다 호출되고 search메소드를 호출한다.
                 String text = editSearch.getText().toString();
-                search(text);
-                search2(text);
+                search(text); // input에 입력된 값을 daily database에 검색한다.
+                search2(text); //input에 입력된 값을 monthly database에 검색한다.
             }
         });
 
     }
 
-    //문자열의 공백을 맞춰주는 메소드
+    //문자열의 공백을 맞춰주는 메소드 (데이터를 합칠 때 공백을 맞추기 위해서 사용)
     private String setTextLength(String text, int length) {
         if(text.length()<length){
             int gap = length - text.length();
@@ -200,7 +204,7 @@ public class Search extends AppCompatActivity {
     }
 
 
-    //문자열사이에 문자를 추가하는 메소드
+    //문자열사이에 문자를 추가하는 메소드(데이터를 가공할 때 문자 사이에 다른 문자를 추가하기 위해 사용)
     public static String insert(String strTarget, int loc, String strInsert){
         if ( strTarget == null ) {
             return strInsert;
