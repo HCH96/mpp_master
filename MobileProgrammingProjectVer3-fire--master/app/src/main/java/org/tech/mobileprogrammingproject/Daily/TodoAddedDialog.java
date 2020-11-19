@@ -59,9 +59,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
     DatabaseReference database = null;
     DailyDB dailydb = null;
 
-    // 카테고리 이름을 담기 위한 String ArrayList
-    ArrayList<String> list = new ArrayList<>();
-
     Calendar cal;
 
     // 새로운 TodoAddedDialog 생성 및 return
@@ -84,30 +81,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
             View v = inflater.inflate(R.layout.todo_popup, container, false);
             spinner = (Spinner) v.findViewById(R.id.category_spinner);
 
-            // 사용자 카테고리 생성을 위해 addValueEventListener 구현
-            database.child("category").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // 추가된 카테고리가 없을 경우 기본 카테고리 제공
-                    if(!snapshot.exists()){
-                        list.add("미정");
-                        list.add("공부");
-                        list.add("과제");
-                        list.add("운동");
-                    }else {
-                        for (DataSnapshot childData : snapshot.getChildren()) {
-                            categoryDB currData = childData.getValue(categoryDB.class);
-                            list.add(currData.categoryName);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterArray);
@@ -129,30 +102,6 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
             // todo_popup layout과 spinner layout 받아옴
             View v = inflater.inflate(R.layout.todo_popup, container, false);
             spinner = (Spinner) v.findViewById(R.id.category_spinner);
-
-            // 사용자 카테고리 생성을 위해 addValueEventListener 구현
-            database.child("category").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // 추가된 카테고리가 없을 경우 기본 카테고리 제공
-                    if(!snapshot.exists()){
-                        list.add("미정");
-                        list.add("공부");
-                        list.add("과제");
-                        list.add("운동");
-                    }else {
-                        for (DataSnapshot childData : snapshot.getChildren()) {
-                            categoryDB currData = childData.getValue(categoryDB.class);
-                            list.add(currData.categoryName);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
 
             ArrayAdapter<CharSequence> adapterArray = ArrayAdapter.createFromResource(v.getContext(), R.array.category_list, android.R.layout.simple_spinner_item);
             adapterArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -209,6 +158,18 @@ public class TodoAddedDialog extends DialogFragment implements View.OnClickListe
                     break;
                 case "운동":
                     spinner.setSelection(3);
+                    break;
+                case "수업":
+                    spinner.setSelection(4);
+                    break;
+                case "시험" :
+                    spinner.setSelection(5);
+                    break;
+                case "약속":
+                    spinner.setSelection(6);
+                    break;
+                case "알바":
+                    spinner.setSelection(7);
                     break;
             }
             return v;
